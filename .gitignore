@@ -129,4 +129,4 @@ dmypy.json
 .pyre/
 
 # User added
-credentials.py
+# temporarily removed: credentials.py
