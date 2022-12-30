@@ -1,2 +1,0 @@
-# Email credentials
-# Database credentials
