@@ -1,3 +1,5 @@
+import logger
+import settings
 import socket
 import subprocess
 import utility
@@ -6,11 +8,9 @@ from models import ConnectedDevice
 from typing import List
 from uuid import getnode
 
-GOOGLE_IP = '8.8.8.8'
-
 def get_ip_address() -> str:
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s.connect((GOOGLE_IP, 1))
+    s.connect((settings.IP_FOR_SOCKET, 1))
     local_ip_address = s.getsockname()[0]
     s.close()
     return local_ip_address
@@ -18,7 +18,7 @@ def get_ip_address() -> str:
 def get_connected_devices() -> List[ConnectedDevice]:
     ip_address: str = get_ip_address()
     ip_address_base: str = utility.parse_base_ip_address(ip_address)
-
+    
     nmap_output_lines: List[str] = run_nmap(ip_address_base)
 
     connected_devices: List[ConnectedDevice] = get_devices_from_nmap(nmap_output_lines, ip_address)
@@ -29,7 +29,9 @@ def get_connected_devices() -> List[ConnectedDevice]:
 # is for the provided base_ip_address which should be the first three octets of this devices IP Address.
 def run_nmap(base_ip_address: str) -> List[str]:    
     # Commenting this out as it takes a bit to run -- hardcoding a sample result for now
+    logger.log('Running nmap query')
     completed_process = subprocess.run(['sudo', 'nmap', '-sn', base_ip_address + '.0/24'], stdout=subprocess.PIPE, text=True)
+    logger.log('Nmap query complete')
     completed_process_output = completed_process.stdout
 
     #completed_process_output = SAMPLE_NMAP_OUTPUT
@@ -66,8 +68,8 @@ def get_devices_from_nmap(nmap_output_lines: List[str], this_ip_address: str) ->
             # Set the MAC Address and manufacturer name separately.
             if this_ip_address in line:
                 connected_device.mac_address = get_this_mac_address()
-                connected_device.device_name = 'Raspberry Pi'
-                connected_device.manufacturer_name = 'Raspberry Pi'
+                connected_device.device_name = settings.THIS_DEVICE_NAME
+                connected_device.manufacturer_name = settings.THIS_MANUFACTURER_NAME
                 connected_devices.append(connected_device)
                 connected_device = ConnectedDevice()
         if "MAC Address" in line:
