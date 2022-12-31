@@ -3,6 +3,7 @@ from models import ConnectedDevice
 from typing import List
 
 def start_monitor():
+    print('Monitoring network...')
     # Every X seconds...
     # Get IP Address
     # Execute nmap to see other devices on network

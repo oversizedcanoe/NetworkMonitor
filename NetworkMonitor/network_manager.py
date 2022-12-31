@@ -4,6 +4,7 @@ import utility
 from credentials import SAMPLE_NMAP_OUTPUT
 from models import ConnectedDevice
 from typing import List
+from uuid import getnode
 
 GOOGLE_IP = '8.8.8.8'
 
@@ -28,10 +29,10 @@ def get_connected_devices() -> List[ConnectedDevice]:
 # is for the provided base_ip_address which should be the first three octets of this devices IP Address.
 def run_nmap(base_ip_address: str) -> List[str]:    
     # Commenting this out as it takes a bit to run -- hardcoding a sample result for now
-    #completed_process = subprocess.run(['sudo', 'nmap', '-sn', base_ip_address + '.0/24'], stdout=subprocess.PIPE, text=True)
-    #completed_process_output = completed_process.stdout
+    completed_process = subprocess.run(['sudo', 'nmap', '-sn', base_ip_address + '.0/24'], stdout=subprocess.PIPE, text=True)
+    completed_process_output = completed_process.stdout
 
-    completed_process_output = SAMPLE_NMAP_OUTPUT
+    #completed_process_output = SAMPLE_NMAP_OUTPUT
 
     nmap_output_lines: List[str] = completed_process_output.split('\n')
     
@@ -64,7 +65,8 @@ def get_devices_from_nmap(nmap_output_lines: List[str], this_ip_address: str) ->
             # If this is the device we are running this on, there won't be a "Mac Address" line.
             # Set the MAC Address and manufacturer name separately.
             if this_ip_address in line:
-                connected_device.mac_address = 'THIS MAC ADDRESS'
+                connected_device.mac_address = get_this_mac_address()
+                connected_device.device_name = 'Raspberry Pi'
                 connected_device.manufacturer_name = 'Raspberry Pi'
                 connected_devices.append(connected_device)
                 connected_device = ConnectedDevice()
@@ -76,3 +78,17 @@ def get_devices_from_nmap(nmap_output_lines: List[str], this_ip_address: str) ->
             connected_device = ConnectedDevice()
 
     return connected_devices
+
+def get_this_mac_address() -> str:
+    mac_as_int = getnode()
+    mac_as_hex = hex(mac_as_int)
+    # value will be '0x' followed by 12 hex characters
+    mac_address = mac_as_hex[2:]
+    mac_address_formatted = ''
+    for i in range(len(mac_address)):
+        mac_address_formatted += mac_address[i]
+        # every second character except the last, add a ':'
+        if (i + 1) % 2 == 0 and i != len(mac_address) - 1:
+            mac_address_formatted += ':'
+    
+    return mac_address_formatted

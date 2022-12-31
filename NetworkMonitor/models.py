@@ -1,31 +1,42 @@
 class ConnectedDevice:
     def __init__(self):
-        self.device_name = ''
-        self.manufacturer_name = ''
-        self.ip_address = ''
-        self.mac_address = ''
+        self._device_name = ''
+        self._manufacturer_name = ''
+        self._ip_address = ''
+        self._mac_address = ''
     
     def __str__(self):
-        return f"Device Name: '{self.device_name}'. Manufacturer: '{self.manufacturer_name}'. IP Address: '{self.ip_address}'. MAC Address: '{self.mac_address}'"
+        return f"Device Name: '{self._device_name}'. Manufacturer: '{self._manufacturer_name}'. IP Address: '{self._ip_address}'. MAC Address: '{self._mac_address}'"
     
-    def _get_device_name(self) -> str:
-        return self.device_name
-    def _set_device_name(self, value) -> None:
-        self.device_name = value
+    @property
+    def device_name(self) -> str:
+        return self._device_name
     
-    def _get_manufacturer_name(self) -> str:
-        return self.manufacturer_name
-    def _set_manufacturer_name(self, value) -> None:
-        self.manufacturer_name = value
+    @device_name.setter
+    def device_name(self, value) -> None:
+        self._device_name = value
         
-    def _get_ip_address(self) -> str:
-        return self.ip_address
-    def _set_ip_address(self, value) -> None:
-        self.ip_address = value
-        
-    def _get_mac_address(self) -> str:
-        return self.ip_address
-    def _set_mac_address(self, value) -> None:
-        self.mac_address = value
+    @property
+    def manufacturer_name(self) -> str:
+        return self._manufacturer_name
+    
+    @manufacturer_name.setter
+    def manufacturer_name(self, value) -> None:
+        self._manufacturer_name = value
+    
+    @property    
+    def ip_address(self) -> str:
+        return self._ip_address
+    @ip_address.setter
+    def ip_address(self, value) -> None:
+        self._ip_address = value
+    
+    @property    
+    def mac_address(self) -> str:
+        return self._ip_address
+    @mac_address.setter
+    def mac_address(self, value) -> None:
+        # for consistency, replace '-' with ':' and capitalize all letters
+        self._mac_address = value.replace('-', ':').upper()
         
     
