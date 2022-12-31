@@ -2,7 +2,7 @@ import re
 from typing import List
 
 # removes the last octet of a given IP Address so we are left with '192.168.X'
-def get_base_ip_address(ip_address:str) -> str:
+def parse_base_ip_address(ip_address:str) -> str:
     reversed_ip_address = ip_address[::-1]
     first_period_index = reversed_ip_address.index(".")
     last_period_index = (len(ip_address) - first_period_index - 1)
@@ -49,6 +49,14 @@ def get_device_name_and_ip_address(nmapLine: str) -> List[str]:
 # Device_Manufacturer may be the string 'Unknown'.
 def get_mac_address_and_manufacturer(line: str) -> List[str]:
     result: List[str] = ['', '']
-    result[0] = 'test mac addr'
-    result[1] = 'test manu name'
+    
+    #remove 'MAC Address: '
+    relevant_text = line[13:]
+    
+    #MAC Address always 17 characters
+    result[0] = relevant_text[0:17]
+    
+    #Manufacturer name will be 2 chars after MAC Address, until 2nd last char   
+    result[1] = relevant_text[19:-1]
+    
     return result
