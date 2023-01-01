@@ -29,9 +29,9 @@ def get_connected_devices() -> List[ConnectedDevice]:
 # is for the provided base_ip_address which should be the first three octets of this devices IP Address.
 def run_nmap(base_ip_address: str) -> List[str]:    
     # Commenting this out as it takes a bit to run -- hardcoding a sample result for now
-    logger.log('Running nmap query')
+    logger.log('Querying network...')
     completed_process = subprocess.run(['sudo', 'nmap', '-sn', base_ip_address + '.0/24'], stdout=subprocess.PIPE, text=True)
-    logger.log('Nmap query complete')
+    logger.log('Query complete.')
     completed_process_output = completed_process.stdout
 
     #completed_process_output = SAMPLE_NMAP_OUTPUT
