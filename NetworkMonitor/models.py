@@ -33,7 +33,7 @@ class ConnectedDevice:
     
     @property    
     def mac_address(self) -> str:
-        return self._ip_address
+        return self._mac_address
     @mac_address.setter
     def mac_address(self, value) -> None:
         # for consistency, replace '-' with ':' and capitalize all letters
