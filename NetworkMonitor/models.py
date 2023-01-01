@@ -1,12 +1,12 @@
 class ConnectedDevice:
     def __init__(self):
         self._device_name = ''
-        self._manufacturer_name = ''
+        self._vendor_name = ''
         self._ip_address = ''
         self._mac_address = ''
     
     def __str__(self):
-        return f"Device Name: '{self._device_name}'. Manufacturer: '{self._manufacturer_name}'. IP Address: '{self._ip_address}'. MAC Address: '{self._mac_address}'"
+        return f"Device Name: '{self._device_name}'. Vendor: '{self._vendor_name}'. IP Address: '{self._ip_address}'. MAC Address: '{self._mac_address}'"
     
     @property
     def device_name(self) -> str:
@@ -17,12 +17,12 @@ class ConnectedDevice:
         self._device_name = value
         
     @property
-    def manufacturer_name(self) -> str:
-        return self._manufacturer_name
+    def vendor_name(self) -> str:
+        return self._vendor_name
     
-    @manufacturer_name.setter
-    def manufacturer_name(self, value) -> None:
-        self._manufacturer_name = value
+    @vendor_name.setter
+    def vendor_name(self, value) -> None:
+        self._vendor_name = value
     
     @property    
     def ip_address(self) -> str:

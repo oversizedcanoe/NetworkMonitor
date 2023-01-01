@@ -6,4 +6,4 @@ IP_FOR_SOCKET: str = '8.8.8.8'
 
 THIS_DEVICE_NAME: str = 'Raspberry Pi'
 
-THIS_MANUFACTURER_NAME: str = 'Raspberry Pi'
+THIS_VENDOR_NAME: str = 'Raspberry Pi'

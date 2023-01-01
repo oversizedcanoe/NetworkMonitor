@@ -45,9 +45,9 @@ def get_device_name_and_ip_address(nmapLine: str) -> List[str]:
         return result
     
 #   Format is:
-#  'MAC Address: MAC_ADDRESS_HERE (DeviceManufacturer)'
-# Device_Manufacturer may be the string 'Unknown'.
-def get_mac_address_and_manufacturer(line: str) -> List[str]:
+#  'MAC Address: MAC_ADDRESS_HERE (DeviceVendor)'
+# Device_Vendor may be the string 'Unknown'.
+def get_mac_address_and_vendor(line: str) -> List[str]:
     result: List[str] = ['', '']
     
     #remove 'MAC Address: '
@@ -56,7 +56,7 @@ def get_mac_address_and_manufacturer(line: str) -> List[str]:
     #MAC Address always 17 characters
     result[0] = relevant_text[0:17]
     
-    #Manufacturer name will be 2 chars after MAC Address, until 2nd last char   
+    #Vendor name will be 2 chars after MAC Address, until 2nd last char   
     result[1] = relevant_text[19:-1]
     
     return result

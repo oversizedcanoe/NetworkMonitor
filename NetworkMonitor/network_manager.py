@@ -65,17 +65,17 @@ def get_devices_from_nmap(nmap_output_lines: List[str], this_ip_address: str) ->
             connected_device.device_name = device_name_and_ip_address[0]
             connected_device.ip_address = device_name_and_ip_address[1]
             # If this is the device we are running this on, there won't be a "Mac Address" line.
-            # Set the MAC Address and manufacturer name separately.
+            # Set the MAC Address and vendor separately.
             if this_ip_address in line:
                 connected_device.mac_address = get_this_mac_address()
                 connected_device.device_name = settings.THIS_DEVICE_NAME
-                connected_device.manufacturer_name = settings.THIS_MANUFACTURER_NAME
+                connected_device.vendor_name = settings.THIS_VENDOR_NAME
                 connected_devices.append(connected_device)
                 connected_device = ConnectedDevice()
         if "MAC Address" in line:
-            mac_address_and_manufacturer = utility.get_mac_address_and_manufacturer(line)
-            connected_device.mac_address = mac_address_and_manufacturer[0]
-            connected_device.manufacturer_name = mac_address_and_manufacturer[1]
+            mac_address_and_vendor = utility.get_mac_address_and_vendor(line)
+            connected_device.mac_address = mac_address_and_vendor[0]
+            connected_device.vendor_name = mac_address_and_vendor[1]
             connected_devices.append(connected_device)
             connected_device = ConnectedDevice()
 
