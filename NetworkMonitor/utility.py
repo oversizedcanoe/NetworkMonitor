@@ -1,4 +1,5 @@
 import re
+from datetime import datetime, timedelta
 from typing import List
 
 # removes the last octet of a given IP Address so we are left with '192.168.X'
@@ -60,3 +61,12 @@ def get_mac_address_and_vendor(line: str) -> List[str]:
     result[1] = relevant_text[19:-1]
     
     return result
+
+def ticks_to_date(ticks: int) -> datetime:
+    return timedelta(microseconds= ticks/10)
+
+
+def date_to_ticks(date: datetime) -> int:
+    start_of_ticks: datetime = datetime(1, 1, 1)
+    return  (date - start_of_ticks).total_seconds() * 10000000
+    

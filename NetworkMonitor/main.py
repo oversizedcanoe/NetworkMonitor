@@ -1,3 +1,4 @@
+import data_access
 import logger
 import network_manager
 import time
@@ -20,8 +21,10 @@ def start_monitor():
         if len(newly_connected_devices) > 0:
             logger.log(str(len(newly_connected_devices)) + ' new device(s) connected.') 
             
-            for new_dev in newly_connected_devices:
-                logger.log(str(new_dev) + ' is now connected.')
+            #for new_dev in newly_connected_devices:
+            #    logger.log(str(new_dev) + ' is now connected.')
+                
+            handle_new_devices(newly_connected_devices)            
         else:       
             logger.log('No new devices connected.')
                        
@@ -48,6 +51,40 @@ def get_new_devices(previous: List[ConnectedDevice], current: List[ConnectedDevi
             
     return result
 
+def handle_new_devices(connected_devices: List[ConnectedDevice]) -> None:
+    # We need a list of which devices to notify 
+    # Brand new devices default to have notify_on_connect to True.
+    # Exisitng devices will have notify_on_connect saved in DB, so need to check.
+    notify_devices: List[ConnectedDevice] = []
+    
+    logger.log(f"{len(connected_devices)} new device(s) connected since last scan. Checking if they exist...")
+    for device in connected_devices:
+        found_device = data_access.find_device_by_mac(device.mac_address)
+        
+        if found_device is None:
+            logger.log(f"Device does not exist in DB. Adding it.")
+            # Device doesn't exist yet. Add it to DB and notify_devices list
+            device.last_connected_date = datetime.utcnow()
+            device.notify_on_connect = True
+            data_access.add_new_device(device)
+            notify_devices.append(device)
+        else:
+            logger.log(f"Device exists in DB. NotifyOnConnect set to: {found_device.notify_on_connect}")
+            # Device exists in DB, update last connected date/ip and add to notify_devices list
+            utc_now: datetime = datetime.utcnow()            
+            device.last_connected_date = utc_now
+            data_access.update_device_on_connection(device.mac_address, utc_now, device.ip_address)
+            
+            if found_device.notify_on_connect == True:
+                notify_devices.append(found_device)
+                
+    logger.log(f"{len(notify_devices)} devices to notify for. They are:")
+    for dev in notify_devices:
+        logger.log(dev)
+    
+    # DO SOMETHING WITH notify_devices: email, text, check if specific MAC Address is connected and
+    # run Alexa skill etc
+    
 def log_prev_and_current(previous_devices, current_devices):
     logger.log('Prev:')
     for p in previous_devices.sort(key=lambda x: x.ip_address):
@@ -57,4 +94,6 @@ def log_prev_and_current(previous_devices, current_devices):
         logger.log(str(p))
     
 
-start_monitor()
+if __name__ == "__main__":
+    #data_access.test()
+    start_monitor()
