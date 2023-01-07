@@ -1,4 +1,4 @@
-CREATE TABLE `Device` 
+CREATE TABLE `ConnectedDevice` 
 ( 
     `FriendlyName` TEXT, 
     `DeviceName` TEXT, 

@@ -1,12 +1,25 @@
+from datetime import datetime
+
 class ConnectedDevice:
     def __init__(self):
+        self._friendly_name = ''
         self._device_name = ''
         self._vendor_name = ''
         self._ip_address = ''
         self._mac_address = ''
+        self._last_connected_date = None
     
     def __str__(self):
         return f"Device Name: '{self._device_name}'. Vendor: '{self._vendor_name}'. IP Address: '{self._ip_address}'. MAC Address: '{self._mac_address}'"
+    
+    @property
+    def friendly_name(self) -> str:
+        return self._friendly_name
+    
+    @friendly_name.setter
+    def friendly_name(self, value) -> None:
+        self._friendly_name = value
+    
     
     @property
     def device_name(self) -> str:
@@ -39,4 +52,19 @@ class ConnectedDevice:
         # for consistency, replace '-' with ':' and capitalize all letters
         self._mac_address = value.replace('-', ':').upper()
         
+    @property
+    def notify_on_connect(self) -> bool:
+        return self._notify_on_connect
+    
+    @notify_on_connect.setter
+    def notify_on_connect(self, value) -> None:
+        self._notify_on_connect = value
+    
+    @property
+    def last_connected_date(self) -> datetime:
+        return self._last_connected_date
+    
+    @last_connected_date.setter
+    def last_connected_date(self, value) -> None:
+        self._last_connected_date = value
     
