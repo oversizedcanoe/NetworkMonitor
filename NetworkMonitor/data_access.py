@@ -46,6 +46,7 @@ def find_device_by_mac(mac_address: str) -> ConnectedDevice:
     device: ConnectedDevice = None
     
     if result is not None:
+        print(device)
         device = ConnectedDevice()
         device.friendly_name = result[0]
         device.device_name = result[1]
@@ -82,7 +83,7 @@ def update_device_on_connection(mac_address: str, date: datetime, ip_address: st
                     where MACAddress = ?
                     """
 
-    args = (date, ip_address, mac_address)
+    args = (utility.date_to_ticks(date), ip_address, mac_address)
     
     execute_command(command_text, args)
                    

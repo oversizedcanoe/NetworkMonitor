@@ -69,7 +69,6 @@ def handle_new_devices(connected_devices: List[ConnectedDevice]) -> None:
             data_access.add_new_device(device)
             notify_devices.append(device)
         else:
-            logger.log(f"Device exists in DB. NotifyOnConnect set to: {found_device.notify_on_connect}")
             # Device exists in DB, update last connected date/ip and add to notify_devices list
             utc_now: datetime = datetime.utcnow()            
             device.last_connected_date = utc_now
@@ -81,6 +80,8 @@ def handle_new_devices(connected_devices: List[ConnectedDevice]) -> None:
     logger.log(f"{len(notify_devices)} devices to notify for. They are:")
     for dev in notify_devices:
         logger.log(dev)
+        
+    logger.log("Sleeping for " + str(settings.SLEEP_TIME) + " seconds...")
     
     # DO SOMETHING WITH notify_devices: email, text, check if specific MAC Address is connected and
     # run Alexa skill etc
