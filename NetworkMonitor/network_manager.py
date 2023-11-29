@@ -3,7 +3,6 @@ import settings
 import socket
 import subprocess
 import utility
-from credentials import SAMPLE_NMAP_OUTPUT
 from models import ConnectedDevice
 from typing import List
 from uuid import getnode
@@ -28,9 +27,16 @@ def get_connected_devices() -> List[ConnectedDevice]:
 # Returns the result of an nmap command where each line is split into it's own string. The nmap command
 # is for the provided base_ip_address which should be the first three octets of this devices IP Address.
 def run_nmap(base_ip_address: str) -> List[str]:    
-    # Commenting this out as it takes a bit to run -- hardcoding a sample result for now
     logger.log('Querying network...')
-    completed_process = subprocess.run(['sudo', 'nmap', '-sn', base_ip_address + '.0/24'], stdout=subprocess.PIPE, text=True)
+    
+    ## TODO determine OS
+    arg_array: List[str] = ['nmap', '-sn', base_ip_address + '.0/24']
+    os_is_windows: bool = True
+
+    if os_is_windows == False:
+        arg_array.insert(0, 'sudo')
+
+    completed_process = subprocess.run(arg_array, stdout=subprocess.PIPE, text=True)
     logger.log('Query complete.')
     completed_process_output = completed_process.stdout
 
