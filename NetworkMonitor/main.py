@@ -1,4 +1,5 @@
 import data_access
+import json
 import logger
 import network_manager
 import time
@@ -6,12 +7,16 @@ import settings
 from datetime import datetime
 from models import ConnectedDevice
 from typing import List
+from testmqtt import MqttClient
 
 def start_monitor():
     logger.log('Application started. Monitoring network.')
     
     previous_connected_devices: List[ConnectedDevice] = []
-    
+    client = MqttClient('python-app')
+
+    logger.log('client initialized')
+
     while True:    
         connected_devices: List[ConnectedDevice] = network_manager.get_connected_devices()
         logger.log('Found ' + str(len(connected_devices)) + ' devices.')
@@ -24,7 +29,7 @@ def start_monitor():
             #for new_dev in newly_connected_devices:
             #    logger.log(str(new_dev) + ' is now connected.')
                 
-            handle_new_devices(newly_connected_devices)            
+            handle_new_devices(client, newly_connected_devices)            
         else:       
             logger.log('No new devices connected.')
                        
@@ -51,7 +56,7 @@ def get_new_devices(previous: List[ConnectedDevice], current: List[ConnectedDevi
             
     return result
 
-def handle_new_devices(connected_devices: List[ConnectedDevice]) -> None:
+def handle_new_devices(mqttClient: MqttClient, connected_devices: List[ConnectedDevice]) -> None:
     # We need a list of which devices to notify 
     # Brand new devices default to have notify_on_connect to True.
     # Exisitng devices will have notify_on_connect saved in DB, so need to check.
@@ -78,9 +83,15 @@ def handle_new_devices(connected_devices: List[ConnectedDevice]) -> None:
                 notify_devices.append(found_device)
                 
     logger.log(f"{len(notify_devices)} devices to notify for. They are:")
+    
+    json_list = []
+
     for dev in notify_devices:
         logger.log(dev)
-        
+        json_list.append(dev.to_json())
+
+    mqttClient.publish('test/devices', json.dumps(json_list))
+
     logger.log("Sleeping for " + str(settings.SLEEP_TIME) + " seconds...")
     
     # DO SOMETHING WITH notify_devices: email, text, check if specific MAC Address is connected and
@@ -96,5 +107,4 @@ def log_prev_and_current(previous_devices, current_devices):
     
 
 if __name__ == "__main__":
-    #data_access.test()
     start_monitor()

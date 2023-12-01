@@ -63,7 +63,7 @@ def get_mac_address_and_vendor(line: str) -> List[str]:
     return result
 
 def ticks_to_date(ticks: int) -> datetime:
-    return timedelta(microseconds= ticks/10)
+    return datetime(1, 1, 1) + timedelta(microseconds=ticks/10)
 
 
 def date_to_ticks(date: datetime) -> int:
