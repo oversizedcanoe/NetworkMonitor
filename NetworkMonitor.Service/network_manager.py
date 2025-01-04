@@ -1,4 +1,4 @@
-import logger
+from logging import getLogger
 import settings
 import socket
 import subprocess
@@ -6,6 +6,8 @@ import utility
 from models import ConnectedDevice
 from typing import List
 from uuid import getnode
+
+__logger = getLogger(__name__)
 
 def get_ip_address() -> str:
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -27,7 +29,7 @@ def get_connected_devices() -> List[ConnectedDevice]:
 # Returns the result of an nmap command where each line is split into it's own string. The nmap command
 # is for the provided base_ip_address which should be the first three octets of this devices IP Address.
 def run_nmap(base_ip_address: str) -> List[str]:    
-    logger.log('Querying network...')
+    __logger.debug('Querying network...')
     
     ## TODO determine OS
     arg_array: List[str] = ['nmap', '-sn', base_ip_address + '.0/24']
@@ -37,7 +39,7 @@ def run_nmap(base_ip_address: str) -> List[str]:
         arg_array.insert(0, 'sudo')
 
     completed_process = subprocess.run(arg_array, stdout=subprocess.PIPE, text=True)
-    logger.log('Query complete.')
+    __logger.debug('Query complete.')
     completed_process_output = completed_process.stdout
 
     #completed_process_output = SAMPLE_NMAP_OUTPUT
