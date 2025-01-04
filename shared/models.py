@@ -1,7 +1,7 @@
 import json
-import utility
 from dataclasses import dataclass, asdict
 from datetime import datetime
+from shared import helper
 
 @dataclass
 class ConnectedDevice:
@@ -12,6 +12,8 @@ class ConnectedDevice:
         self._ip_address = ''
         self._mac_address = ''
         self._last_connected_date = None
+        # TODO add notify on connect, add device type
+
     
     def __str__(self):
         return f"Device Name: '{self._device_name}'. Vendor: '{self._vendor_name}'. IP Address: '{self._ip_address}'. MAC Address: '{self._mac_address}'"
@@ -73,5 +75,5 @@ class ConnectedDevice:
                      "vendor_name": self.vendor_name,
                      "ip_address": self.ip_address,
                      "mac_address": self.mac_address,
-                     "last_connected_date": utility.date_to_ticks(self.last_connected_date),
+                     "last_connected_date": helper.date_to_ticks(self.last_connected_date),
     })

@@ -4,6 +4,7 @@ import sys
 import service.network_monitor as network_monitor
 import web.server as server
 from multiprocessing import Process
+import  shared.data_access as data_access
 
 __logger = getLogger(__name__)
 
@@ -27,10 +28,13 @@ if __name__ == "__main__":
                         handlers=[
                             logging.FileHandler("log.log"),
                             logging.StreamHandler()])
-    
+
+    data_access.create_db_if_not_exists()
+
     service_process = Process(target=network_monitor.monitor_network_forever)
     server_process = Process(target=server.serve)
 
     __logger.info('Starting NetworkMonitor Service and Server')
+
     service_process.run()
     server_process.run()

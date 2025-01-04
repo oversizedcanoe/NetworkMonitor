@@ -1,6 +1,6 @@
 from logging import getLogger
 import shared.data_access as data_access
-import network_manager
+from service import network_manager
 import time
 import settings
 from datetime import datetime, timezone
@@ -10,29 +10,7 @@ import traceback
 
 __logger = getLogger(__name__)
 
-def monitor_network_forever():
-    previous_connected_devices: List[ConnectedDevice] = []
-
-    while True:
-        connected_devices: List[ConnectedDevice] = network_manager.get_connected_devices()
-        __logger.debug('Found %s devices.', str(len(connected_devices)))
-
-        # TODO Update databases with last connected time
-        
-        newly_connected_devices: List[ConnectedDevice] = get_new_devices(previous_connected_devices, connected_devices)
-
-        __logger.debug('%s new device(s) connected.', str(len(newly_connected_devices))) 
-
-        if len(connected_devices) > 0:
-            handle_new_devices(newly_connected_devices)            
-                       
-        # Set this scans result to previous result 
-        previous_connected_devices = connected_devices
-        
-        # Sleep for required time, repeat ad infinitum.
-        time.sleep(settings.SLEEP_TIME)
-
-def get_new_devices(previous: List[ConnectedDevice], current: List[ConnectedDevice]) -> List[ConnectedDevice]:
+def get_devices_to_notify(previous: List[ConnectedDevice], current: List[ConnectedDevice]) -> List[ConnectedDevice]:
     result: List[ConnectedDevice] = []
 
     for current_device in current:
@@ -49,43 +27,57 @@ def get_new_devices(previous: List[ConnectedDevice], current: List[ConnectedDevi
             
     return result
 
-def handle_new_devices(connected_devices: List[ConnectedDevice]) -> None:
-    # We need a list of which devices to notify 
-    # Brand new devices default to have notify_on_connect to True.
-    # Exisitng devices will have notify_on_connect saved in DB, so need to check.
-    notify_devices: List[ConnectedDevice] = []
-    
-    __logger.debug("%s new device(s) connected since last scan. Checking if they exist...", len(connected_devices))
+
+def handle_connected_devices(query_time: datetime, connected_devices: List[ConnectedDevice]) -> List[ConnectedDevice]:
+    all_devices = data_access.get_all_devices()
+    devices_to_notify_for: List[ConnectedDevice] = []
 
     for device in connected_devices:
-        found_device = data_access.find_device_by_mac(device.mac_address)
-        
-        if found_device is None:
-            __logger.log(f"Device does not exist in DB. Adding it.")
+        existing_device = next((dev for dev in all_devices if dev.mac_address == device.mac_address), None)
+
+        if existing_device == None:
             # Device doesn't exist yet. Add it to DB and notify_devices list
-            device.last_connected_date = datetime.now(timezone.utc)
+            device.last_connected_date = query_time
             device.notify_on_connect = True
             data_access.add_new_device(device)
-            notify_devices.append(device)
+            devices_to_notify_for.append(device)
         else:
-            # Device exists in DB, update last connected date/ip and add to notify_devices list
-            utc_now: datetime = datetime.now(timezone.utc)            
-            device.last_connected_date = utc_now
-            data_access.update_device_on_connection(device.mac_address, utc_now, device.ip_address)
-            
-            if found_device.notify_on_connect == True:
-                notify_devices.append(found_device)
-                
-    __logger.debug("%s devices to notify for. They are:", len(notify_devices))
-    
-    # json_list = []
+            # Has previously been connected, updated connection date/updated ip address
+            existing_device.last_connected_date = query_time
+            data_access.update_device_on_connection(existing_device.mac_address, query_time, existing_device.ip_address)
+            if existing_device.notify_on_connect:
+                devices_to_notify_for.append(existing_device)
 
-    # for dev in notify_devices:
-    #     __logger.log(dev)
-    #     json_list.append(dev.to_json())
+def notify_new_connections(query_time: datetime, connected_devices: List[ConnectedDevice]) -> None:
+    # TODO email or something
+    for device in connected_devices:
+        __logger.info('New device connected at %s -- %s', query_time, device.to_json())
+    pass
 
-    __logger.debug("Sleeping for %s seconds...", str(settings.SLEEP_TIME))
-    
+def monitor_network_forever():
+    previous_connected_devices: List[ConnectedDevice] = []
+
+    while True:
+        query_time = datetime.now(timezone.utc)
+        connected_devices: List[ConnectedDevice] = network_manager.get_connected_devices()
+        __logger.debug('%s device(s) connected.', str(len(connected_devices)))
+
+        # Add or update all connected devices
+        notify_connected_devices: List[ConnectedDevice] = handle_connected_devices(query_time, connected_devices, )
+
+        # 'notify_connected_devices' is all currently connected devices which should be notified when they connect
+        # However only notify if they are NEWLY connected (were not part of previously connected devices)
+        devices_requiring_notification: List[ConnectedDevice] = get_devices_to_notify(previous_connected_devices, notify_connected_devices)
+        __logger.debug('%s device(s) newly connected requiring notification.', str(len(devices_requiring_notification))) 
+
+        if len(devices_requiring_notification) > 0:
+            notify_new_connections(query_time, devices_requiring_notification)            
+                       
+        # Set this scans result to previous result 
+        previous_connected_devices = connected_devices
+        
+        time.sleep(settings.SLEEP_TIME)
+
 # def log_prev_and_current(previous_devices, current_devices):
 #     __logger.debug('Prev:')
 #     for p in previous_devices.sort(key=lambda x: x.ip_address):

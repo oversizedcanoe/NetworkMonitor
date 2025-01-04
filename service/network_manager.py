@@ -4,7 +4,7 @@ import service.parser as parser
 from shared.models import ConnectedDevice
 from typing import List
 from uuid import getnode
-import nmap_manager as nmap
+from service import nmap_manager as nmap
 
 def get_ip_address() -> str:
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)

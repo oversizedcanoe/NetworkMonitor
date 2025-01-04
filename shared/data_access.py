@@ -1,20 +1,27 @@
+from logging import getLogger
 import sqlite3
 from datetime import datetime
+from typing import List
 from shared import helper
-from shared.helper import ticks_to_date
-from models import ConnectedDevice
+from shared.models import ConnectedDevice
+
+__logger = getLogger(__name__)
 
 def create_db_if_not_exists():
-    pass
+    __logger.debug('Creating DB if not exists')
+    f = open("Database/CreateDatabase.sql", "r")
+    command_text = ' '.join(f.readlines())
+    print(command_text)
+    __execute_command(command_text, None)
 
-def execute_command(command_text: str, args: tuple) -> None:
+def __execute_command(command_text: str, args: tuple) -> None:
     connection = sqlite3.connect("Database/NetworkMonitor.db")
     cursor = connection.cursor()
     cursor.execute(command_text, args)
     connection.commit()
     connection.close()
     
-def execute_query(query_text: str, args: tuple, fetch_all:bool) -> any:
+def __execute_query(query_text: str, args: tuple, fetch_all:bool) -> any:
     connection = sqlite3.connect("Database/NetworkMonitor.db")
     cursor = connection.cursor()
     cursor.execute(query_text, args)
@@ -42,7 +49,7 @@ def find_device_by_mac(mac_address: str) -> ConnectedDevice:
     
     args = (mac_address,)
     
-    result = execute_query(query_text, args, False)
+    result = __execute_query(query_text, args, False)
     
     device: ConnectedDevice = None
     
@@ -55,7 +62,7 @@ def find_device_by_mac(mac_address: str) -> ConnectedDevice:
         device.mac_address = result[3]
         device.vendor_name = result[4]
         device.notify_on_connect = result[5]
-        device.last_connected_date = ticks_to_date(result[6])
+        device.last_connected_date = helper.ticks_to_date(result[6])
         
     return device
     
@@ -71,11 +78,11 @@ def add_new_device(device: ConnectedDevice) -> None:
     
     args = (device.device_name, device.ip_address, device.mac_address, device.vendor_name, helper.date_to_ticks(device.last_connected_date))
     
-    execute_command(command_text, args)
+    __execute_command(command_text, args)
     
     return         
                    
-def update_device_on_connection(mac_address: str, date: datetime, ip_address: str) -> None:
+def update_device_on_connection(mac_address: str, last_connected_date: datetime, updated_ip_address: str) -> None:
     command_text =  """
                     Update ConnectedDevice 
                     set 
@@ -84,8 +91,37 @@ def update_device_on_connection(mac_address: str, date: datetime, ip_address: st
                     where MACAddress = ?
                     """
 
-    args = (helper.date_to_ticks(date), ip_address, mac_address)
+    args = (helper.date_to_ticks(last_connected_date), updated_ip_address, mac_address)
     
-    execute_command(command_text, args)
+    __execute_command(command_text, args)
                    
     return
+
+def get_all_devices() -> List[ConnectedDevice]:
+    query_text = """
+                Select 
+                FriendlyName, DeviceName, IPAddress,
+                MACAddress, VendorName, NotifyOnConnect,
+                LastConnectedDate
+                from ConnectedDevice
+                """
+    
+    result = __execute_query(query_text, None, True)
+    
+    device: ConnectedDevice = None
+    devices: List[ConnectedDevice] = []
+    
+    if result is not None:
+        for row in result:
+            device = ConnectedDevice()
+            device.friendly_name = row[0]
+            device.device_name = row[1]
+            device.ip_address = row[2]
+            device.mac_address = row[3]
+            device.vendor_name = row[4]
+            device.notify_on_connect = row[5]
+            device.last_connected_date = helper.ticks_to_date(row[6])
+            devices.append(device)
+        
+    return devices
+    
