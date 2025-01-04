@@ -9,3 +9,5 @@ Planned functionality:
 	- When a specific device connects, a specific command could execute (Amazon Alexa Skill to activate a plug when you connect to your network, etc)
 	- The application could email you a notification when a new device connects (useful if you have an open Wi-Fi, or for security reasons)
 		- Ideally the user could reply to the email with the user-specified device name so they wouldn't need to log into an application or manually update the database.
+- I should make a web app that runs and displays the connected device info and allows you to name them, disable or enable notifications for them, etc.
+- Similar to how pihole runs locally and you can view it's dashboard on a local network
