@@ -1,10 +1,11 @@
 import sqlite3
-import utility
 from datetime import datetime
+from shared import helper
+from shared.helper import ticks_to_date
 from models import ConnectedDevice
 
-def get_db_cursor():
-    return cursor
+def create_db_if_not_exists():
+    pass
 
 def execute_command(command_text: str, args: tuple) -> None:
     connection = sqlite3.connect("Database/NetworkMonitor.db")
@@ -54,7 +55,7 @@ def find_device_by_mac(mac_address: str) -> ConnectedDevice:
         device.mac_address = result[3]
         device.vendor_name = result[4]
         device.notify_on_connect = result[5]
-        device.last_connected_date = utility.ticks_to_date(result[6])
+        device.last_connected_date = ticks_to_date(result[6])
         
     return device
     
@@ -68,7 +69,7 @@ def add_new_device(device: ConnectedDevice) -> None:
                     (null, ?, ?, ?, ?, 1, ?)
                     """
     
-    args = (device.device_name, device.ip_address, device.mac_address, device.vendor_name, utility.date_to_ticks(device.last_connected_date))
+    args = (device.device_name, device.ip_address, device.mac_address, device.vendor_name, helper.date_to_ticks(device.last_connected_date))
     
     execute_command(command_text, args)
     
@@ -83,7 +84,7 @@ def update_device_on_connection(mac_address: str, date: datetime, ip_address: st
                     where MACAddress = ?
                     """
 
-    args = (utility.date_to_ticks(date), ip_address, mac_address)
+    args = (helper.date_to_ticks(date), ip_address, mac_address)
     
     execute_command(command_text, args)
                    

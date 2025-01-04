@@ -1,39 +1,30 @@
 from logging import getLogger
-import logging
-import data_access
-import json
+import shared.data_access as data_access
 import network_manager
 import time
 import settings
-from datetime import datetime
-from models import ConnectedDevice
+from datetime import datetime, timezone
+from shared.models import ConnectedDevice
 from typing import List
 import traceback
-import sys
 
 __logger = getLogger(__name__)
 
-def start_monitor():
-    __logger.info('Monitoring network')
-    __logger.debug('Debug stuff')
-    
+def monitor_network_forever():
     previous_connected_devices: List[ConnectedDevice] = []
 
-    while False:    
+    while True:
         connected_devices: List[ConnectedDevice] = network_manager.get_connected_devices()
         __logger.debug('Found %s devices.', str(len(connected_devices)))
+
+        # TODO Update databases with last connected time
         
         newly_connected_devices: List[ConnectedDevice] = get_new_devices(previous_connected_devices, connected_devices)
-        
-        if len(newly_connected_devices) > 0:
-            __logger.debug('%s new device(s) connected.', str(len(newly_connected_devices))) 
-            
-            #for new_dev in newly_connected_devices:
-            #    __logger.debug('%s is now connected.', str(new_dev))
-                
+
+        __logger.debug('%s new device(s) connected.', str(len(newly_connected_devices))) 
+
+        if len(connected_devices) > 0:
             handle_new_devices(newly_connected_devices)            
-        else:       
-            __logger.debug('No new devices connected.')
                        
         # Set this scans result to previous result 
         previous_connected_devices = connected_devices
@@ -72,13 +63,13 @@ def handle_new_devices(connected_devices: List[ConnectedDevice]) -> None:
         if found_device is None:
             __logger.log(f"Device does not exist in DB. Adding it.")
             # Device doesn't exist yet. Add it to DB and notify_devices list
-            device.last_connected_date = datetime.utcnow()
+            device.last_connected_date = datetime.now(timezone.utc)
             device.notify_on_connect = True
             data_access.add_new_device(device)
             notify_devices.append(device)
         else:
             # Device exists in DB, update last connected date/ip and add to notify_devices list
-            utc_now: datetime = datetime.utcnow()            
+            utc_now: datetime = datetime.now(timezone.utc)            
             device.last_connected_date = utc_now
             data_access.update_device_on_connection(device.mac_address, utc_now, device.ip_address)
             
@@ -87,45 +78,27 @@ def handle_new_devices(connected_devices: List[ConnectedDevice]) -> None:
                 
     __logger.debug("%s devices to notify for. They are:", len(notify_devices))
     
-    json_list = []
+    # json_list = []
 
-    for dev in notify_devices:
-        __logger.log(dev)
-        json_list.append(dev.to_json())
+    # for dev in notify_devices:
+    #     __logger.log(dev)
+    #     json_list.append(dev.to_json())
 
     __logger.debug("Sleeping for %s seconds...", str(settings.SLEEP_TIME))
     
-def log_prev_and_current(previous_devices, current_devices):
-    __logger.debug('Prev:')
-    for p in previous_devices.sort(key=lambda x: x.ip_address):
-        __logger.debug(str(p))
-    __logger.debug('Current:')                
-    for p in current_devices.sort(key=lambda x: x.ip_address):
-        __logger.debug(str(p))
+# def log_prev_and_current(previous_devices, current_devices):
+#     __logger.debug('Prev:')
+#     for p in previous_devices.sort(key=lambda x: x.ip_address):
+#         __logger.debug(str(p))
+#     __logger.debug('Current:')                
+#     for p in current_devices.sort(key=lambda x: x.ip_address):
+#         __logger.debug(str(p))
 
-def get_log_level():
-    log_level = logging.DEBUG
-
-    if len(sys.argv) > 1:
-        log_level_arg = sys.argv[1]
-        log_level_value = getattr(logging, log_level_arg.upper(), None)
-    
-        if isinstance(log_level_value, int):
-            log_level = log_level_value
-            
-    return log_level
-
-if __name__ == "__main__":
+def monitor(): 
     try:
-        log_level = get_log_level()
-        logging.basicConfig(format='%(asctime)s - %(levelname)s: %(message)s',
-                            encoding='utf-8', 
-                            level=log_level,
-                            handlers=[
-                                logging.FileHandler("log.log"),
-                                logging.StreamHandler()])
-
-        start_monitor()
-    except:
+        __logger.info('Service starting up')
+        monitor_network_forever()
+    except Exception as e:
         __logger.fatal('Unexpected shutdown')
         __logger.fatal(traceback.format_exc())
+        raise e

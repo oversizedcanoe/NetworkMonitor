@@ -1,5 +1,4 @@
 import re
-from datetime import datetime, timedelta
 from typing import List
 
 # removes the last octet of a given IP Address so we are left with '192.168.X'
@@ -10,12 +9,11 @@ def parse_base_ip_address(ip_address:str) -> str:
     ip_address_base = ip_address[0:last_period_index]
     return ip_address_base
 
-
 # * Format is one of:
 #  'Nmap scan report for IP_ADDRESS_HERE'
 #  'Nmap scan report for DeviceName (IP_ADDRESS_HERE)'
 #  'Nmap scan report for MAC_ADDRESS_HERE (IP_ADDRESS_HERE)'
-def get_device_name_and_ip_address(nmapLine: str) -> List[str]:
+def parse_device_name_and_ip_address(nmapLine: str) -> List[str]:
     result: List[str] = ['','']
     # Get everything after the 'for '
     relevant_text: str = nmapLine[nmapLine.index("for") + 4:]
@@ -48,7 +46,7 @@ def get_device_name_and_ip_address(nmapLine: str) -> List[str]:
 #   Format is:
 #  'MAC Address: MAC_ADDRESS_HERE (DeviceVendor)'
 # Device_Vendor may be the string 'Unknown'.
-def get_mac_address_and_vendor(line: str) -> List[str]:
+def parse_mac_address_and_vendor(line: str) -> List[str]:
     result: List[str] = ['', '']
     
     #remove 'MAC Address: '
@@ -61,12 +59,3 @@ def get_mac_address_and_vendor(line: str) -> List[str]:
     result[1] = relevant_text[19:-1]
     
     return result
-
-def ticks_to_date(ticks: int) -> datetime:
-    return datetime(1, 1, 1) + timedelta(microseconds=ticks/10)
-
-
-def date_to_ticks(date: datetime) -> int:
-    start_of_ticks: datetime = datetime(1, 1, 1)
-    return  (date - start_of_ticks).total_seconds() * 10000000
-    
