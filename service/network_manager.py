@@ -6,7 +6,7 @@ from typing import List
 from uuid import getnode
 from service import nmap_manager as nmap
 
-def get_ip_address() -> str:
+def get_this_ip_address() -> str:
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     s.connect((settings.IP_FOR_SOCKET, 1))
     local_ip_address = s.getsockname()[0]
@@ -28,10 +28,10 @@ def get_this_mac_address() -> str:
     return mac_address_formatted
 
 def get_connected_devices() -> List[ConnectedDevice]:
-    ip_address: str = get_ip_address()
-    ip_address_base: str = parser.parse_base_ip_address(ip_address)
+    this_ip_address: str = get_this_ip_address()
+    ip_address_base: str = parser.parse_base_ip_address(this_ip_address)
     
     nmap_output_lines: List[str] = nmap.run_nmap(ip_address_base)
-    connected_devices: List[ConnectedDevice] = nmap.get_devices_from_nmap(nmap_output_lines, ip_address)
+    connected_devices: List[ConnectedDevice] = nmap.get_devices_from_nmap(nmap_output_lines, this_ip_address, get_this_mac_address())
     
     return connected_devices

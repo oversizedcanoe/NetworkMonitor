@@ -1,6 +1,8 @@
 from logging import getLogger
 import logging
 import sys
+from threading import Thread
+import time
 import service.network_monitor as network_monitor
 import web.server as server
 from multiprocessing import Process
@@ -29,12 +31,20 @@ if __name__ == "__main__":
                             logging.FileHandler("log.log"),
                             logging.StreamHandler()])
 
-    data_access.create_db_if_not_exists()
+    __logger.info('Application starting')
 
-    service_process = Process(target=network_monitor.monitor_network_forever)
-    server_process = Process(target=server.serve)
+    data_access.create_db_if_not_exists()
+    service_thread = Thread(target=network_monitor.monitor, daemon=True)
+    server_thread = Thread(target=server.serve, daemon=True)
 
     __logger.info('Starting NetworkMonitor Service and Server')
 
-    service_process.run()
-    server_process.run()
+    service_thread.start()
+    server_thread.start()
+
+    try:
+        while True:
+            # Keep the main thread alive
+            time.sleep(100)  
+    except KeyboardInterrupt:
+        __logger.info("Ctrl+C detected. Exiting...")

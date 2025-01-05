@@ -3,14 +3,13 @@ from logging import getLogger
 import subprocess
 from typing import List
 from shared import helper
-from service.network_manager import get_this_mac_address
 import settings
 from shared.models import ConnectedDevice
-import parser
+from service import parser
 
 __logger = getLogger(__name__)
 
-def get_devices_from_nmap(nmap_output_lines: List[str], this_ip_address: str) -> List[ConnectedDevice]:
+def get_devices_from_nmap(nmap_output_lines: List[str], this_ip_address: str, this_mac_address: str) -> List[ConnectedDevice]:
     # There are 5 different lines which get printed.
     # 1. Starting line: Starting Nmap 7.70 ( https://nmap.org ) at 2022-12-30 12:47 EST
     # 2. For each device: 'Nmap scan report for ...'
@@ -36,7 +35,7 @@ def get_devices_from_nmap(nmap_output_lines: List[str], this_ip_address: str) ->
             # If this is the device we are running this on, there won't be a "Mac Address" line.
             # Set the MAC Address and vendor separately.
             if this_ip_address in line:
-                connected_device.mac_address = get_this_mac_address()
+                connected_device.mac_address = this_mac_address
                 connected_device.device_name = settings.THIS_DEVICE_NAME
                 connected_device.vendor_name = settings.THIS_VENDOR_NAME
                 connected_devices.append(connected_device)
@@ -54,6 +53,8 @@ def get_devices_from_nmap(nmap_output_lines: List[str], this_ip_address: str) ->
 # is for the provided base_ip_address which should be the first three octets of this devices IP Address.
 def run_nmap(base_ip_address: str) -> List[str]:    
     __logger.debug('Querying network...')
+
+    # TODO check if nmap installed, if not, error
     
     arg_array: List[str] = ['nmap', '-sn', base_ip_address + '.0/24']
 

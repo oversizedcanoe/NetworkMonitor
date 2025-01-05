@@ -4,26 +4,29 @@ from datetime import datetime
 from typing import List
 from shared import helper
 from shared.models import ConnectedDevice
+from pathlib import Path
 
 __logger = getLogger(__name__)
+__base_path = str(Path(__file__).parent)
+
+def get_db_connection() -> tuple[sqlite3.Connection, sqlite3.Cursor]:
+    connection = sqlite3.connect(__base_path + '/Database/NetworkMonitor.db')
+    cursor = connection.cursor()
+    return (connection, cursor)
 
 def create_db_if_not_exists():
     __logger.debug('Creating DB if not exists')
-    f = open("Database/CreateDatabase.sql", "r")
-    command_text = ' '.join(f.readlines())
-    print(command_text)
-    __execute_command(command_text, None)
+    f = open(__base_path + "/Database/CreateDatabase.sql", "r")
+    __execute_command(f.read())
 
-def __execute_command(command_text: str, args: tuple) -> None:
-    connection = sqlite3.connect("Database/NetworkMonitor.db")
-    cursor = connection.cursor()
+def __execute_command(command_text: str, args: tuple = ()) -> None:
+    (connection, cursor) = get_db_connection()
     cursor.execute(command_text, args)
     connection.commit()
     connection.close()
-    
-def __execute_query(query_text: str, args: tuple, fetch_all:bool) -> any:
-    connection = sqlite3.connect("Database/NetworkMonitor.db")
-    cursor = connection.cursor()
+
+def __execute_query(query_text: str, fetch_all: bool, args: tuple = ()) -> any:
+    (connection, cursor) = get_db_connection()
     cursor.execute(query_text, args)
     
     result = None
@@ -49,7 +52,7 @@ def find_device_by_mac(mac_address: str) -> ConnectedDevice:
     
     args = (mac_address,)
     
-    result = __execute_query(query_text, args, False)
+    result = __execute_query(query_text, False, args)
     
     device: ConnectedDevice = None
     
@@ -106,7 +109,7 @@ def get_all_devices() -> List[ConnectedDevice]:
                 from ConnectedDevice
                 """
     
-    result = __execute_query(query_text, None, True)
+    result = __execute_query(query_text, True)
     
     device: ConnectedDevice = None
     devices: List[ConnectedDevice] = []
