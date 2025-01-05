@@ -40,11 +40,11 @@ if __name__ == "__main__":
     __logger.info('Starting NetworkMonitor Service and Server')
 
     service_thread.start()
-    server_thread.start()
+    #server_thread.start()
 
     try:
         while True:
             # Keep the main thread alive
-            time.sleep(100)  
+            time.sleep(10)  
     except KeyboardInterrupt:
         __logger.info("Ctrl+C detected. Exiting...")

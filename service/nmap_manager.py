@@ -54,18 +54,17 @@ def get_devices_from_nmap(nmap_output_lines: List[str], this_ip_address: str, th
 def run_nmap(base_ip_address: str) -> List[str]:    
     __logger.debug('Querying network...')
 
-    # TODO check if nmap installed, if not, error
-    
-    arg_array: List[str] = ['nmap', '-sn', base_ip_address + '.0/24']
+    arg_array: List[str] = [settings.NMAP_PATH, '-sn', base_ip_address + '.0/24']
 
     if helper.is_windows() == False:
         arg_array.insert(0, 'sudo')
 
-    completed_process = subprocess.run(arg_array, stdout=subprocess.PIPE, text=True)
+    __logger.debug(arg_array)
+    completed_process = subprocess.run(arg_array, stdout=subprocess.PIPE, text=True, shell=True)
     __logger.debug('Query complete.')
     completed_process_output = completed_process.stdout
 
-    #completed_process_output = SAMPLE_NMAP_OUTPUT
+    __logger.debug(completed_process_output)
 
     nmap_output_lines: List[str] = completed_process_output.split('\n')
     

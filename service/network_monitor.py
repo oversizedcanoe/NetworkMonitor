@@ -48,6 +48,8 @@ def handle_connected_devices(query_time: datetime, connected_devices: List[Conne
             if existing_device.notify_on_connect:
                 devices_to_notify_for.append(existing_device)
 
+    return devices_to_notify_for
+
 def notify_new_connections(query_time: datetime, connected_devices: List[ConnectedDevice]) -> None:
     # TODO email or something
     for device in connected_devices:
@@ -57,29 +59,33 @@ def notify_new_connections(query_time: datetime, connected_devices: List[Connect
 def monitor_network_forever():
     previous_connected_devices: List[ConnectedDevice] = []
 
+    # used as a latch so that when this app starts up, we don't incorrectly notify that all devices
+    # are newly connected 
+    
+    skip_notification = True
+
     while True:
-        __logger.debug('Doin stuff')
-        time.sleep(5)
+        query_time = datetime.now(timezone.utc)
+        connected_devices: List[ConnectedDevice] = network_manager.get_connected_devices()
+        __logger.debug('%s device(s) connected.', str(len(connected_devices)))
 
-        # query_time = datetime.now(timezone.utc)
-        # connected_devices: List[ConnectedDevice] = network_manager.get_connected_devices()
-        # __logger.debug('%s device(s) connected.', str(len(connected_devices)))
+        # Add or update all connected devices
+        notify_connected_devices: List[ConnectedDevice] = handle_connected_devices(query_time, connected_devices, )
 
-        # # Add or update all connected devices
-        # notify_connected_devices: List[ConnectedDevice] = handle_connected_devices(query_time, connected_devices, )
+        # 'notify_connected_devices' is all currently connected devices which should be notified when they connect
+        # However only notify if they are NEWLY connected (were not part of previously connected devices)
+        devices_requiring_notification: List[ConnectedDevice] = get_devices_to_notify(previous_connected_devices, notify_connected_devices)
+        __logger.debug('%s device(s) newly connected requiring notification.', str(len(devices_requiring_notification))) 
 
-        # # 'notify_connected_devices' is all currently connected devices which should be notified when they connect
-        # # However only notify if they are NEWLY connected (were not part of previously connected devices)
-        # devices_requiring_notification: List[ConnectedDevice] = get_devices_to_notify(previous_connected_devices, notify_connected_devices)
-        # __logger.debug('%s device(s) newly connected requiring notification.', str(len(devices_requiring_notification))) 
-
-        # if len(devices_requiring_notification) > 0:
-        #     notify_new_connections(query_time, devices_requiring_notification)            
+        if len(devices_requiring_notification) > 0 and skip_notification == False:
+            notify_new_connections(query_time, devices_requiring_notification)            
                        
-        # # Set this scans result to previous result 
-        # previous_connected_devices = connected_devices
+        # Set this scans result to previous result 
+        previous_connected_devices = connected_devices
+
+        skip_notification = False
         
-        # time.sleep(settings.SLEEP_TIME)
+        time.sleep(settings.SLEEP_TIME)
 
 # def log_prev_and_current(previous_devices, current_devices):
 #     __logger.debug('Prev:')

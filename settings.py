@@ -7,3 +7,5 @@ IP_FOR_SOCKET: str = '8.8.8.8'
 THIS_DEVICE_NAME: str = 'NetworkMonitor Server'
 
 THIS_VENDOR_NAME: str = 'NetworkMonitor Server'
+
+NMAP_PATH: str = 'C:\\Program Files (x86)\\Nmap\\nmap.exe'
