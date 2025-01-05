@@ -37,14 +37,14 @@ def get_devices_from_nmap(nmap_output_lines: List[str], this_ip_address: str, th
             if this_ip_address in line:
                 connected_device.mac_address = this_mac_address
                 connected_device.device_name = settings.THIS_DEVICE_NAME
-                connected_device.vendor_name = settings.THIS_VENDOR_NAME
+                connected_device.manufacturer = settings.THIS_VENDOR_NAME
                 connected_device._device_type = DeviceType.NETWORK_MONITOR_SERVER
                 connected_devices.append(connected_device)
                 connected_device = ConnectedDevice()
         if "MAC Address" in line:
             mac_address_and_vendor = parser.parse_mac_address_and_vendor(line)
             connected_device.mac_address = mac_address_and_vendor[0]
-            connected_device.vendor_name = mac_address_and_vendor[1]
+            connected_device.manufacturer = mac_address_and_vendor[1]
             connected_devices.append(connected_device)
             connected_device = ConnectedDevice()
 

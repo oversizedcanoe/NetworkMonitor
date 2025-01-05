@@ -63,7 +63,7 @@ def find_device_by_mac(mac_address: str) -> ConnectedDevice:
         device.device_name = result[1]
         device.ip_address = result[2]
         device.mac_address = result[3]
-        device.vendor_name = result[4]
+        device.manufacturer = result[4]
         device.notify_on_connect = result[5]
         device.last_connected_date = helper.ticks_to_date(result[6])
         
@@ -79,7 +79,7 @@ def add_new_device(device: ConnectedDevice) -> None:
                     (null, ?, ?, ?, ?, 1, ?, ?)
                     """
     
-    args = (device.device_name, device.ip_address, device.mac_address, device.vendor_name, 
+    args = (device.device_name, device.ip_address, device.mac_address, device.manufacturer, 
             helper.date_to_ticks(device.last_connected_date), int(device.device_type))
     
     __execute_command(command_text, args)
@@ -122,7 +122,7 @@ def get_all_devices() -> List[ConnectedDevice]:
             device.device_name = row[1]
             device.ip_address = row[2]
             device.mac_address = row[3]
-            device.vendor_name = row[4]
+            device.manufacturer = row[4]
             device.notify_on_connect = row[5]
             device.last_connected_date = helper.ticks_to_date(row[6])
             device.device_type = row[7]

@@ -4,8 +4,13 @@ CREATE TABLE IF NOT EXISTS `ConnectedDevice`
     `DeviceName` TEXT, 
     `IPAddress` TEXT NOT NULL, 
     `MACAddress` TEXT NOT NULL UNIQUE, 
-    `VendorName` TEXT, 
+    `Manufacturer` TEXT, 
     `NotifyOnConnect` INTEGER NOT NULL DEFAULT 1,
     `LastConnectedDate` INTEGER,
     `DeviceType` INTEGER NOT NULL DEFAULT 0
+)
+
+CREATE TABLE IF NOT EXISTS `LastQueryTime`
+(
+    `Value` INTEGER
 )
