@@ -35,12 +35,11 @@ if __name__ == "__main__":
 
     data_access.create_db_if_not_exists()
     service_thread = Thread(target=network_monitor.monitor, daemon=True)
-    server_thread = Thread(target=server.serve, daemon=True)
 
     __logger.info('Starting NetworkMonitor Service and Server')
 
     service_thread.start()
-    #server_thread.start()
+    server.serve()
 
     try:
         while True:
