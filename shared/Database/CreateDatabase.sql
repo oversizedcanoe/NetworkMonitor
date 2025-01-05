@@ -6,5 +6,6 @@ CREATE TABLE IF NOT EXISTS `ConnectedDevice`
     `MACAddress` TEXT NOT NULL UNIQUE, 
     `VendorName` TEXT, 
     `NotifyOnConnect` INTEGER NOT NULL DEFAULT 1,
-    `LastConnectedDate` INTEGER 
+    `LastConnectedDate` INTEGER,
+    `DeviceType` INTEGER NOT NULL DEFAULT 0
 )

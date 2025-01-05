@@ -1,7 +1,18 @@
 import json
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass
 from datetime import datetime
 from shared import helper
+from enum import IntEnum
+
+class DeviceType(IntEnum):
+    UNKNOWN = 0
+    NETWORK_MONITOR_SERVER = 1
+    ROUTER = 2
+    COMPUTER = 3
+    PHONE = 4
+    SMART_HOME_DEVICE = 5
+    TV = 6
+    GAME_CONSOLE = 7
 
 @dataclass
 class ConnectedDevice:
@@ -12,8 +23,7 @@ class ConnectedDevice:
         self._ip_address = ''
         self._mac_address = ''
         self._last_connected_date = None
-        # TODO add notify on connect, add device type
-
+        self._device_type = DeviceType.UNKNOWN
     
     def __str__(self):
         return f"Device Name: '{self._device_name}'. Vendor: '{self._vendor_name}'. IP Address: '{self._ip_address}'. MAC Address: '{self._mac_address}'"
@@ -68,6 +78,12 @@ class ConnectedDevice:
     def last_connected_date(self, value) -> None:
         self._last_connected_date = value
     
+    @property
+    def device_type(self) -> DeviceType:
+        return self._device_type
+    @device_type.setter
+    def device_type(self, value) -> None:
+        self._device_type = value
     
     def to_json(self):
         return json.dumps({"friendly_name": self.friendly_name, 

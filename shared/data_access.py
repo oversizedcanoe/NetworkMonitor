@@ -74,12 +74,13 @@ def add_new_device(device: ConnectedDevice) -> None:
                     Insert into ConnectedDevice
                     (FriendlyName, DeviceName, IPAddress,
                     MACAddress, VendorName, NotifyOnConnect,
-                    LastConnectedDate)
+                    LastConnectedDate, DeviceType)
                     values 
-                    (null, ?, ?, ?, ?, 1, ?)
+                    (null, ?, ?, ?, ?, 1, ?, ?)
                     """
     
-    args = (device.device_name, device.ip_address, device.mac_address, device.vendor_name, helper.date_to_ticks(device.last_connected_date))
+    args = (device.device_name, device.ip_address, device.mac_address, device.vendor_name, 
+            helper.date_to_ticks(device.last_connected_date), int(device.device_type))
     
     __execute_command(command_text, args)
     
@@ -105,7 +106,7 @@ def get_all_devices() -> List[ConnectedDevice]:
                 Select 
                 FriendlyName, DeviceName, IPAddress,
                 MACAddress, VendorName, NotifyOnConnect,
-                LastConnectedDate
+                LastConnectedDate, DeviceType
                 from ConnectedDevice
                 """
     
@@ -124,6 +125,7 @@ def get_all_devices() -> List[ConnectedDevice]:
             device.vendor_name = row[4]
             device.notify_on_connect = row[5]
             device.last_connected_date = helper.ticks_to_date(row[6])
+            device.device_type = row[7]
             devices.append(device)
         
     return devices

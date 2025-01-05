@@ -4,7 +4,7 @@ import subprocess
 from typing import List
 from shared import helper
 import settings
-from shared.models import ConnectedDevice
+from shared.models import ConnectedDevice, DeviceType
 from service import parser
 
 __logger = getLogger(__name__)
@@ -38,6 +38,7 @@ def get_devices_from_nmap(nmap_output_lines: List[str], this_ip_address: str, th
                 connected_device.mac_address = this_mac_address
                 connected_device.device_name = settings.THIS_DEVICE_NAME
                 connected_device.vendor_name = settings.THIS_VENDOR_NAME
+                connected_device._device_type = DeviceType.NETWORK_MONITOR_SERVER
                 connected_devices.append(connected_device)
                 connected_device = ConnectedDevice()
         if "MAC Address" in line:
@@ -59,7 +60,6 @@ def run_nmap(base_ip_address: str) -> List[str]:
     if helper.is_windows() == False:
         arg_array.insert(0, 'sudo')
 
-    __logger.debug(arg_array)
     completed_process = subprocess.run(arg_array, stdout=subprocess.PIPE, text=True, shell=True)
     __logger.debug('Query complete.')
     completed_process_output = completed_process.stdout
