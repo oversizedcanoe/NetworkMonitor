@@ -1,10 +1,12 @@
 from logging import getLogger
 import sqlite3
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List
 from shared import helper
 from shared.models import ConnectedDevice
 from pathlib import Path
+import glob
+import os
 
 __logger = getLogger(__name__)
 __base_path = str(Path(__file__).parent)
@@ -14,10 +16,26 @@ def get_db_connection() -> tuple[sqlite3.Connection, sqlite3.Cursor]:
     cursor = connection.cursor()
     return (connection, cursor)
 
-def create_db_if_not_exists():
+def initialize_db():
     __logger.debug('Creating DB if not exists')
-    f = open(__base_path + "/Database/CreateDatabase.sql", "r")
+
+    directory = __base_path + '/Database/Migrations/'
+    migration_name = "000_CreateMigrationTable.sql"
+    f = open(directory + migration_name, "r")
     __execute_command(f.read())
+    add_migration(migration_name)
+
+    migrations_applied = get_migrations()
+
+    migrations_available = glob.glob(directory + '*')
+    migrations_available.sort()
+    
+    for migration in migrations_available:
+        _, file_name = os.path.split(migration)
+        if file_name not in migrations_applied:
+            migration_file = open(migration, "r")
+            __execute_command(migration_file.read())
+            add_migration(file_name)
 
 def __execute_command(command_text: str, args: tuple = ()) -> None:
     (connection, cursor) = get_db_connection()
@@ -39,19 +57,45 @@ def __execute_query(query_text: str, fetch_all: bool, args: tuple = ()) -> any:
     connection.close()
     
     return result
+
+def get_migrations() -> List[str]:
+    query_text = """
+                Select
+                MigrationName
+                from Migrations
+                """
     
+    result = __execute_query(query_text, True)
+    migrations = []
+
+    for row in result:
+        migrations.append(row[0])
+
+    return migrations
+    
+
+def add_migration(migration_name: str) -> None:
+    command_text = """
+                    Insert into Migrations 
+                    (MigrationName, AppliedDate)
+                    values
+                    (?, ?)
+                    """
+    
+    args = (migration_name, helper.date_to_ticks(datetime.now(timezone.utc)))
+    __execute_command(command_text, args)
+
 def find_device_by_mac(mac_address: str) -> ConnectedDevice:
     query_text = """
                 Select 
                 FriendlyName, DeviceName, IPAddress,
-                MACAddress, VendorName, NotifyOnConnect,
+                MACAddress, Manufacturer, NotifyOnConnect,
                 LastConnectedDate
                 from ConnectedDevice
                 where MACAddress = ?
                 """
     
     args = (mac_address,)
-    
     result = __execute_query(query_text, False, args)
     
     device: ConnectedDevice = None
@@ -73,7 +117,7 @@ def add_new_device(device: ConnectedDevice) -> None:
     command_text =  """
                     Insert into ConnectedDevice
                     (FriendlyName, DeviceName, IPAddress,
-                    MACAddress, VendorName, NotifyOnConnect,
+                    MACAddress, Manufacturer, NotifyOnConnect,
                     LastConnectedDate, DeviceType)
                     values 
                     (null, ?, ?, ?, ?, 1, ?, ?)
@@ -81,10 +125,7 @@ def add_new_device(device: ConnectedDevice) -> None:
     
     args = (device.device_name, device.ip_address, device.mac_address, device.manufacturer, 
             helper.date_to_ticks(device.last_connected_date), int(device.device_type))
-    
     __execute_command(command_text, args)
-    
-    return         
                    
 def update_device_on_connection(mac_address: str, last_connected_date: datetime, updated_ip_address: str) -> None:
     command_text =  """
@@ -96,16 +137,13 @@ def update_device_on_connection(mac_address: str, last_connected_date: datetime,
                     """
 
     args = (helper.date_to_ticks(last_connected_date), updated_ip_address, mac_address)
-    
     __execute_command(command_text, args)
-                   
-    return
 
 def get_all_devices() -> List[ConnectedDevice]:
     query_text = """
                 Select 
                 FriendlyName, DeviceName, IPAddress,
-                MACAddress, VendorName, NotifyOnConnect,
+                MACAddress, Manufacturer, NotifyOnConnect,
                 LastConnectedDate, DeviceType
                 from ConnectedDevice
                 """
@@ -129,4 +167,26 @@ def get_all_devices() -> List[ConnectedDevice]:
             devices.append(device)
         
     return devices
+
+
+def get_last_query_time() -> datetime:
+    query_text = """
+                Select 
+                Value
+                from LastConnectedTime
+                """
     
+    result = __execute_query(query_text, False)
+
+    return result[0]
+    
+def update_last_query_time() -> None:
+    command_text = """
+                    Update LastQueryTime 
+                    set 
+                    Value = ?
+                    """
+
+    args = (helper.date_to_ticks(datetime.now(timezone.utc)),)
+    __execute_command(command_text, args)
+

@@ -19,7 +19,7 @@ class ConnectedDevice:
     def __init__(self):
         self._friendly_name = ''
         self._device_name = ''
-        self.manufacturer = ''
+        self._manufacturer = ''
         self._ip_address = ''
         self._mac_address = ''
         self._last_connected_date = None
@@ -44,10 +44,10 @@ class ConnectedDevice:
         
     @property
     def manufacturer(self) -> str:
-        return self.manufacturer
+        return self._manufacturer
     @manufacturer.setter
     def manufacturer(self, value) -> None:
-        self.manufacturer = value
+        self._manufacturer = value
     
     @property    
     def ip_address(self) -> str:

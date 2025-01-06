@@ -33,12 +33,14 @@ if __name__ == "__main__":
 
     __logger.info('Application starting')
 
-    data_access.create_db_if_not_exists()
+    data_access.initialize_db()
     service_thread = Thread(target=network_monitor.monitor, daemon=True)
 
     __logger.info('Starting NetworkMonitor Service and Server')
 
     service_thread.start()
+
+    # Run flask server on main thread running it in Debug mode doesn't work properly
     server.serve()
 
     try:

@@ -1,3 +1,4 @@
+
 CREATE TABLE IF NOT EXISTS `ConnectedDevice` 
 ( 
     `FriendlyName` TEXT, 
@@ -8,9 +9,4 @@ CREATE TABLE IF NOT EXISTS `ConnectedDevice`
     `NotifyOnConnect` INTEGER NOT NULL DEFAULT 1,
     `LastConnectedDate` INTEGER,
     `DeviceType` INTEGER NOT NULL DEFAULT 0
-)
-
-CREATE TABLE IF NOT EXISTS `LastQueryTime`
-(
-    `Value` INTEGER
 )
