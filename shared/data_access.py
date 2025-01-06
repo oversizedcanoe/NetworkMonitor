@@ -17,8 +17,7 @@ def get_db_connection() -> tuple[sqlite3.Connection, sqlite3.Cursor]:
     return (connection, cursor)
 
 def initialize_db():
-    __logger.debug('Creating DB if not exists')
-
+    __logger.debug('Initializing DB and running migrations')
     directory = __base_path + '/Database/Migrations/'
     migration_name = "000_CreateMigrationTable.sql"
     f = open(directory + migration_name, "r")
@@ -34,6 +33,7 @@ def initialize_db():
         _, file_name = os.path.split(migration)
         if file_name not in migrations_applied:
             migration_file = open(migration, "r")
+            __logger.debug('Applying migration: %s', file_name)
             __execute_command(migration_file.read())
             add_migration(file_name)
 

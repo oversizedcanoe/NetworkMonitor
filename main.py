@@ -5,8 +5,8 @@ from threading import Thread
 import time
 import service.network_monitor as network_monitor
 import web.server as server
-from multiprocessing import Process
 import  shared.data_access as data_access
+from werkzeug.serving import is_running_from_reloader
 
 __logger = getLogger(__name__)
 
@@ -32,15 +32,14 @@ if __name__ == "__main__":
                             logging.StreamHandler()])
 
     __logger.info('Application starting')
-
     data_access.initialize_db()
-    service_thread = Thread(target=network_monitor.monitor, daemon=True)
-
     __logger.info('Starting NetworkMonitor Service and Server')
 
-    service_thread.start()
+    if not is_running_from_reloader():
+        service_thread = Thread(target=network_monitor.monitor, daemon=True)
+        service_thread.start()
 
-    # Run flask server on main thread running it in Debug mode doesn't work properly
+    # Run flask server on the main thread, otherwise debugging/hot reload doesn't work
     server.serve()
 
     try:

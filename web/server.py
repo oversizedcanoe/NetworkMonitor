@@ -19,8 +19,7 @@ def index():
 def serve():
     try:
         __logger.info('Server starting up')
-
-        # TODO This needs to not be used when not debugging. It is running things twice
+        # TODO app.run should not be used in production
         app.run(debug=True, host='0.0.0.0', port=5000)
     except Exception as e:
         __logger.fatal('Unexpected shutdown')
