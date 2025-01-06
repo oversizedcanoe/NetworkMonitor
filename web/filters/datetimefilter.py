@@ -1,7 +1,7 @@
 from datetime import datetime
 from dateutil import tz
 
-def datetimefilter(value: datetime):
+def datetimefilter(value: datetime) -> str:
     if value.tzinfo is None:
         value = value.replace(tzinfo=tz.tzutc())    
     to_zone = tz.tzlocal()

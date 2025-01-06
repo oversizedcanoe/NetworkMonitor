@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="color-scheme" content="light dark">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.orange.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.zinc.min.css">
     <link rel="stylesheet" href="../static/styles.css" />
     <title>Dashboard</title>
 </head>
@@ -13,6 +13,11 @@
 <body>
     <main class="container">
         <h1>Network Monitor</h1>
+
+        <article>
+            <p>Last query time: {{last_query_time | datetimefilter}}</p>
+        </article>
+
         <article>
             <details open>
                 <summary>Quick View</summary>
@@ -20,7 +25,7 @@
                     <thead>
                         <th>Name</th>
                         <th>Device Name</th>
-                        <th>Last Connected UTC</th>
+                        <th>Connected</th>
                         <th>Device Type</th>
                         <th>Notify</th>
                     </thead>
@@ -29,9 +34,16 @@
                         <tr>
                             <td>{{device.friendly_name}}</td>
                             <td>{{device.device_name}}</td>
-                            <td>{{device.last_connected_date | datetimefilter}}</td>
+                            <td>
+                                {% if (device.last_connected_date | datetimefilter) == (last_query_time | datetimefilter)%}
+                                🟢
+                                {% else %}
+                                {{device.last_connected_date | datetimefilter}}
+                                {% endif %}
+                            
+                            </td>
                             <td>{{device.device_type}}</td>
-                            <td><button>{{device.notify_on_connect}}</button></td>
+                            <td>{{'✔' if device.notify_on_connect else '❌'}}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -49,7 +61,7 @@
                         <th>Manufacturer</th>
                         <th>IP Address</th>
                         <th>MAC Address</th>
-                        <th>Last Connected Date</th>
+                        <th>Last Connected UTC</th>
                         <th>Device Type</th>
                         <th>Notify</th>
                     </thead>

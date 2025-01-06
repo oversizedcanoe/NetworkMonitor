@@ -66,6 +66,7 @@ def monitor_network_forever():
 
     while True:
         query_time = datetime.now(timezone.utc)
+        data_access.update_last_query_time(query_time)
         connected_devices: List[ConnectedDevice] = network_manager.get_connected_devices()
         __logger.debug('%s device(s) connected.', str(len(connected_devices)))
 

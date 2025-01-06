@@ -168,25 +168,27 @@ def get_all_devices() -> List[ConnectedDevice]:
         
     return devices
 
-
 def get_last_query_time() -> datetime:
     query_text = """
                 Select 
                 Value
-                from LastConnectedTime
+                from LastQueryTime
                 """
     
     result = __execute_query(query_text, False)
 
-    return result[0]
+    if result is None:
+        return datetime.min
     
-def update_last_query_time() -> None:
+    return datetime.strptime(result[0], "%Y-%m-%d %H:%M:%S.%f%z")
+    
+def update_last_query_time(query_time) -> None:
     command_text = """
                     Update LastQueryTime 
                     set 
                     Value = ?
                     """
 
-    args = (helper.date_to_ticks(datetime.now(timezone.utc)),)
+    args = (query_time,)
     __execute_command(command_text, args)
 

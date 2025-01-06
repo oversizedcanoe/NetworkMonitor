@@ -14,7 +14,8 @@ app.jinja_env.filters['datetimefilter'] = datetimefilter
 @app.route("/")
 def index():
     connected_devices = data_access.get_all_devices()
-    return render_template('index.html', devices = connected_devices)
+    last_query_time = data_access.get_last_query_time()
+    return render_template('index.html', devices = connected_devices, last_query_time = last_query_time)
 
 def serve():
     try:
