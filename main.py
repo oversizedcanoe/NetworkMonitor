@@ -1,12 +1,8 @@
 from logging import getLogger
 import logging
 import sys
-from threading import Thread
-import time
 import service.network_monitor as network_monitor
-import web.server as server
-import  shared.data_access as data_access
-from werkzeug.serving import is_running_from_reloader
+import shared.data_access as data_access
 
 __logger = getLogger(__name__)
 
@@ -33,18 +29,6 @@ if __name__ == "__main__":
 
     __logger.info('Application starting')
     data_access.initialize_db()
-    __logger.info('Starting NetworkMonitor Service and Server')
-
-    if not is_running_from_reloader():
-        service_thread = Thread(target=network_monitor.monitor, daemon=True)
-        service_thread.start()
-
-    # Run flask server on the main thread, otherwise debugging/hot reload doesn't work
-    server.serve()
-
-    try:
-        while True:
-            # Keep the main thread alive
-            time.sleep(10)  
-    except KeyboardInterrupt:
-        __logger.info("Ctrl+C detected. Exiting...")
+    
+    __logger.info('Starting NetworkMonitor Service')
+    network_monitor.monitor()

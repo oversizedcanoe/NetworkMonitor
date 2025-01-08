@@ -3,7 +3,7 @@ import time
 import traceback
 from flask import Flask, render_template
 from shared import data_access
-from web.filters.datetimefilter import datetimefilter
+from web_old.filters.datetimefilter import datetimefilter
 
 __logger = getLogger(__name__)
 
@@ -27,3 +27,4 @@ def serve():
         __logger.fatal(traceback.format_exc())
         raise e
     
+serve()

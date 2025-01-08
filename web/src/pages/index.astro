@@ -1,0 +1,20 @@
+---
+import Card from '../components/Card.astro';
+import Header from '../components/Header.astro';
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout>
+	<Header />
+	<main class="container">
+		<Card title='Quick View' isOpen={true}>
+			<h1>Hello</h1>
+			<!-- <ConnectedDeviceTable /> -->
+		</Card>
+		<Card title='Detailed View' isOpen={false}>
+			<h2>Hello 2</h2>
+			<!-- <ConnectedDeviceTable /> -->
+		</Card>
+	</main>
+	
+</Layout>
