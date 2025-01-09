@@ -1,0 +1,30 @@
+---
+
+---
+<table class="striped">
+    <thead>
+        <th>Name</th>
+        <th>Device Name</th>
+        <th>Connected</th>
+        <th>Device Type</th>
+        <th>Notify</th>
+    </thead>
+    <tbody>
+        <!-- {% for device in devices %}
+        <tr>
+            <td>{{device.friendly_name}}</td>
+            <td>{{device.device_name}}</td>
+            <td>
+                {% if (device.last_connected_date | datetimefilter) == (last_query_time | datetimefilter)%}
+                🟢
+                {% else %}
+                {{device.last_connected_date | datetimefilter}}
+                {% endif %}
+            
+            </td>
+            <td>{{device.device_type}}</td>
+            <td>{{'✔' if device.notify_on_connect else '❌'}}</td>
+        </tr>
+        {% endfor %} -->
+    </tbody>
+</table>

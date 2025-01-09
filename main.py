@@ -32,3 +32,5 @@ if __name__ == "__main__":
     
     __logger.info('Starting NetworkMonitor Service')
     network_monitor.monitor()
+
+    # TODO start API and Astro site
