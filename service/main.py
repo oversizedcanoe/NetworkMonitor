@@ -1,11 +1,12 @@
+
 from logging import getLogger
 import logging
+import os
 import sys
-from threading import Thread
-import time
-import api.server as server
-import service.network_monitor as network_monitor
-import shared.data_access as data_access
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+import network_monitor
+
+from shared import data_access
 
 __logger = getLogger(__name__)
 
@@ -31,19 +32,8 @@ if __name__ == "__main__":
                             logging.StreamHandler()])
 
     __logger.info('Application starting')
+
     data_access.initialize_db()
-    
+    __logger.info('Starting NetworkMonitor Service')
 
-    service_thread = Thread(target=network_monitor.monitor, daemon=True)
-
-    __logger.info('Starting NetworkMonitor Service and API')
-    #service_thread.start()
-    server.serve()
-    # TODO start Astro site
-    
-    try:
-        while True:
-            # Keep the main thread alive
-            time.sleep(100)  
-    except KeyboardInterrupt:
-        __logger('Ctrl+C detected, shutting down')
+    network_monitor.monitor()
