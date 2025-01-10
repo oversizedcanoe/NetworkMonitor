@@ -1,3 +1,4 @@
+import inspect
 import json
 from dataclasses import dataclass
 from datetime import datetime
@@ -93,3 +94,9 @@ class ConnectedDevice:
                      "mac_address": self.mac_address,
                      "last_connected_date": helper.date_to_ticks(self.last_connected_date),
     })
+
+    def serialize_device(self) -> dict:
+        result = {}
+        for name, member in inspect.getmembers(type(self), predicate=lambda m: isinstance(m, property)):
+            result[name] = getattr(self, name)
+        return result

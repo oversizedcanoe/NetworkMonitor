@@ -65,9 +65,10 @@ def monitor_network_forever():
     skip_notification = True
 
     while True:
+        connected_devices: List[ConnectedDevice] = network_manager.get_connected_devices()
         query_time = datetime.now(timezone.utc)
         data_access.update_last_query_time(query_time)
-        connected_devices: List[ConnectedDevice] = network_manager.get_connected_devices()
+        
         __logger.debug('%s device(s) connected.', str(len(connected_devices)))
 
         # Add or update all connected devices

@@ -11,7 +11,8 @@ class DeviceResource:
     def on_get(self, req, resp):
         try:
             _logger.debug('Incoming GET Request')
-            resp.text = data_access.get_all_devices()
+            devices = data_access.get_all_devices()
+            resp.text = json.dumps([item.serialize_device() for item in devices], ensure_ascii=False, default=str)
             resp.status = falcon.HTTP_200
             resp.content_type = falcon.MEDIA_JSON
             # some_param = req.get_param_as_int('id')

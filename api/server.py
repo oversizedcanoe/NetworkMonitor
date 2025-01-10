@@ -1,11 +1,8 @@
 import logging
-import sys
-import os
 import falcon
 from wsgiref import simple_server
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from device_resource import DeviceResource
-from monitor_resource import MonitorResource
+from api.device_resource import DeviceResource
+from api.monitor_resource import MonitorResource
 
 app = falcon.App(cors_enable=True)
 _logger = logging.getLogger(__name__)
@@ -35,7 +32,7 @@ def serve():
     _logger.debug('Shutting down')
     
 if __name__ == "__main__":
-    logging.basicConfig(format='%(asctime)s - %(levelname)s: %(message)s',
+    logging.basicConfig(format='%(asctime)s [%(levelname)s] %(funcName)s(): %(message)s',
                         encoding='utf-8', 
                         level=logging.DEBUG,
                         handlers=[logging.StreamHandler()])
