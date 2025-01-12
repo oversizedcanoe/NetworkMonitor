@@ -180,7 +180,7 @@ def get_last_query_time() -> datetime:
     if result is None:
         return datetime.min
     
-    return datetime.strptime(result[0], "%Y-%m-%d %H:%M:%S.%f%z")
+    return helper.ticks_to_date(result[0])
     
 def update_last_query_time(query_time) -> None:
     command_text = """
@@ -189,6 +189,6 @@ def update_last_query_time(query_time) -> None:
                     Value = ?
                     """
 
-    args = (query_time,)
+    args = (helper.date_to_ticks(query_time),)
     __execute_command(command_text, args)
 

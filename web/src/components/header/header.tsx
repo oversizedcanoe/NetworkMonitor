@@ -1,11 +1,19 @@
+import Spinner from '../spinner/spinner'
 import './header.css'
 
-function Header() {
+interface HeaderProps {
+  lastQueryTime: Date
+}
+
+function Header({ lastQueryTime }: HeaderProps) {
 
   return (
     <header>
         <div className="container">
-            <h1>Network Monitor</h1>
+          <hgroup>
+            <h1 className='inline'>Netw<Spinner/>rk M<Spinner/>nit<Spinner/>r</h1>
+            <p>Monitor your local network </p>
+          </hgroup>
         </div>
     </header>
   )

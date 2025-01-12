@@ -4,3 +4,7 @@
 .root > footer, .root > header, .root > main {
     padding-block: var(--pico-block-spacing-vertical);
 }
+
+.inline {
+    display: inline;
+}
