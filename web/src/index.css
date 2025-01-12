@@ -1,0 +1,6 @@
+@import '../node_modules/@picocss/pico/';
+@import '../node_modules/@picocss/pico/css/pico.sand.min.css';
+
+.root > footer, .root > header, .root > main {
+    padding-block: var(--pico-block-spacing-vertical);
+}
