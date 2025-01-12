@@ -88,7 +88,7 @@ def add_migration(migration_name: str) -> None:
 def find_device_by_mac(mac_address: str) -> ConnectedDevice:
     query_text = """
                 Select 
-                FriendlyName, DeviceName, IPAddress,
+                ID, FriendlyName, DeviceName, IPAddress,
                 MACAddress, Manufacturer, NotifyOnConnect,
                 LastConnectedDate
                 from ConnectedDevice
@@ -103,24 +103,25 @@ def find_device_by_mac(mac_address: str) -> ConnectedDevice:
     if result is not None:
         print(device)
         device = ConnectedDevice()
-        device.friendly_name = result[0]
-        device.device_name = result[1]
-        device.ip_address = result[2]
-        device.mac_address = result[3]
-        device.manufacturer = result[4]
-        device.notify_on_connect = result[5]
-        device.last_connected_date = helper.ticks_to_date(result[6])
+        device.id = result[0]
+        device.friendly_name = result[1]
+        device.device_name = result[2]
+        device.ip_address = result[3]
+        device.mac_address = result[4]
+        device.manufacturer = result[5]
+        device.notify_on_connect = result[6]
+        device.last_connected_date = helper.ticks_to_date(result[7])
         
     return device
     
 def add_new_device(device: ConnectedDevice) -> None:
     command_text =  """
                     Insert into ConnectedDevice
-                    (FriendlyName, DeviceName, IPAddress,
+                    (ID, FriendlyName, DeviceName, IPAddress,
                     MACAddress, Manufacturer, NotifyOnConnect,
                     LastConnectedDate, DeviceType)
                     values 
-                    (null, ?, ?, ?, ?, 1, ?, ?)
+                    (null, null, ?, ?, ?, ?, 1, ?, ?)
                     """
     
     args = (device.device_name, device.ip_address, device.mac_address, device.manufacturer, 
@@ -142,7 +143,7 @@ def update_device_on_connection(mac_address: str, last_connected_date: datetime,
 def get_all_devices() -> List[ConnectedDevice]:
     query_text = """
                 Select 
-                FriendlyName, DeviceName, IPAddress,
+                ID, FriendlyName, DeviceName, IPAddress,
                 MACAddress, Manufacturer, NotifyOnConnect,
                 LastConnectedDate, DeviceType
                 from ConnectedDevice
@@ -156,14 +157,15 @@ def get_all_devices() -> List[ConnectedDevice]:
     if result is not None:
         for row in result:
             device = ConnectedDevice()
-            device.friendly_name = row[0]
-            device.device_name = row[1]
-            device.ip_address = row[2]
-            device.mac_address = row[3]
-            device.manufacturer = row[4]
-            device.notify_on_connect = row[5]
-            device.last_connected_date = helper.ticks_to_date(row[6])
-            device.device_type = row[7]
+            device.id = row[0]
+            device.friendly_name = row[1]
+            device.device_name = row[2]
+            device.ip_address = row[3]
+            device.mac_address = row[4]
+            device.manufacturer = row[5]
+            device.notify_on_connect = row[6]
+            device.last_connected_date = helper.ticks_to_date(row[7])
+            device.device_type = row[8]
             devices.append(device)
         
     return devices

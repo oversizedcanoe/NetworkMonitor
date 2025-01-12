@@ -1,6 +1,7 @@
 
 CREATE TABLE IF NOT EXISTS `ConnectedDevice` 
 ( 
+    `ID` INTEGER PRIMARY KEY,
     `FriendlyName` TEXT, 
     `DeviceName` TEXT, 
     `IPAddress` TEXT NOT NULL, 

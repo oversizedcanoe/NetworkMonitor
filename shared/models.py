@@ -18,6 +18,7 @@ class DeviceType(IntEnum):
 @dataclass
 class ConnectedDevice:
     def __init__(self):
+        self._id = 0
         self._friendly_name = ''
         self._device_name = ''
         self._manufacturer = ''
@@ -28,6 +29,13 @@ class ConnectedDevice:
     
     def __str__(self):
         return f"Device Name: '{self._device_name}'. Manufacturer: '{self.manufacturer}'. IP Address: '{self._ip_address}'. MAC Address: '{self._mac_address}'"
+    
+    @property
+    def id(self) -> int:
+        return self._id
+    @id.setter
+    def id(self, value) -> None:
+        self._id = value
     
     @property
     def friendly_name(self) -> str:

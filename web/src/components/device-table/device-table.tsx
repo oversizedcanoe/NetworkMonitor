@@ -8,12 +8,16 @@ interface DeviceTableProps {
 }
 
 function DeviceTable({ lastQueryTime, devices, isDetailTable }: DeviceTableProps) {
+    function showModal(macAddress: string) {
+        alert('show modal for device ' + macAddress)
+    }
 
     if (isDetailTable) {
         return (
             <table className="striped">
                 <thead>
                     <tr>
+                        <th>ID</th>
                         <th>Name</th>
                         <th>Device Name</th>
                         <th>Manufacturer</th>
@@ -27,7 +31,8 @@ function DeviceTable({ lastQueryTime, devices, isDetailTable }: DeviceTableProps
                 </thead>
                 <tbody>
                     {devices.map((device) =>
-                        <tr>
+                        <tr onClick={() => showModal(device.id)}>
+                            <td>{device.id}</td>
                             <td>{device.friendly_name}</td>
                             <td>{device.device_name}</td>
                             <td>{device.vendor_name}</td>
@@ -57,7 +62,7 @@ function DeviceTable({ lastQueryTime, devices, isDetailTable }: DeviceTableProps
                 </thead>
                 <tbody>
                     {devices.map((device) =>
-                        <tr>
+                        <tr onClick={() => showModal(device.id)}>
                             <td>{device.friendly_name}</td>
                             <td>{device.device_name}</td>
                             <td>
@@ -70,7 +75,6 @@ function DeviceTable({ lastQueryTime, devices, isDetailTable }: DeviceTableProps
                 </tbody>
             </table>
         )
-
     }
 }
 

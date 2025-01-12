@@ -2,3 +2,7 @@ tr, td, th {
     padding: 0rem;
     text-align: center;
 }
+
+tbody > tr:hover {
+    cursor: pointer;
+}

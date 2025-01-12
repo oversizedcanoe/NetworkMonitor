@@ -5,6 +5,7 @@ import Header from './components/header/header'
 import { BackendService } from './services/backendservice'
 import DeviceTable from './components/device-table/device-table'
 import { dateToLocal } from './utility/helper'
+import EditDeviceModal from './components/edit-device-modal/edit-device-modal'
 
 function App() {
   const [devices, setDevices] = useState([])
