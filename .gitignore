@@ -131,4 +131,5 @@ dmypy.json
 # User added
 credentials.py
 *.db
+*.db-journal
 .vs/
