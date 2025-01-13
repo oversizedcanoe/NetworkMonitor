@@ -63,6 +63,7 @@ function App() {
           <DeviceTable devices={devices} lastQueryTime={lastQueryTime} isDetailTable={true} />
         </Accordian>
       </main>
+      <EditDeviceModal/>
     </>
   )
 }

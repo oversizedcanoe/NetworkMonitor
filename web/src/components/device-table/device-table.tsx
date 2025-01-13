@@ -1,3 +1,4 @@
+import { ModalService } from '../../services/modal.service';
 import { dateToLocal } from '../../utility/helper';
 import './device-table.css'
 
@@ -8,8 +9,8 @@ interface DeviceTableProps {
 }
 
 function DeviceTable({ lastQueryTime, devices, isDetailTable }: DeviceTableProps) {
-    function showModal(macAddress: string) {
-        alert('show modal for device ' + macAddress)
+    function showModal(id: number) {
+        ModalService.setOpen(true, {id: id, devices: devices})
     }
 
     if (isDetailTable) {
@@ -31,7 +32,7 @@ function DeviceTable({ lastQueryTime, devices, isDetailTable }: DeviceTableProps
                 </thead>
                 <tbody>
                     {devices.map((device) =>
-                        <tr onClick={() => showModal(device.id)}>
+                        <tr onClick={() => showModal(device.id)} key={device.id + '-b'}>
                             <td>{device.id}</td>
                             <td>{device.friendly_name}</td>
                             <td>{device.device_name}</td>
@@ -62,7 +63,7 @@ function DeviceTable({ lastQueryTime, devices, isDetailTable }: DeviceTableProps
                 </thead>
                 <tbody>
                     {devices.map((device) =>
-                        <tr onClick={() => showModal(device.id)}>
+                        <tr onClick={() => showModal(device.id)} key={device.id + '-a'}>
                             <td>{device.friendly_name}</td>
                             <td>{device.device_name}</td>
                             <td>
