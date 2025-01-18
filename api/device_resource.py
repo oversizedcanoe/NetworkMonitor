@@ -26,8 +26,9 @@ class DeviceResource:
     def on_post_id(self, req, resp, id):
         try:
             _logger.debug('Incoming POST Request')
-            #req_body = req.media
-            _logger.log('POST Request complete')
+            req_body = req.media
+            data_access.update_device(id, req_body['friendlyName'], req_body['deviceType'], req_body['notify'])
+            _logger.debug('POST Request complete')
         except Exception as e:
             _logger.error('Error occurred')
             _logger.error(traceback.format_exc())

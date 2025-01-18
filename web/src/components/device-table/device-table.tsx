@@ -70,7 +70,7 @@ function DeviceTable({ lastQueryTime, devices, isDetailTable }: DeviceTableProps
                                 {(device.last_connected_date == lastQueryTime) ? <span>🟢</span> : <span>{dateToLocal(device.last_connected_date, true)}</span>}
                             </td>
                             <td>{device.device_type}</td>
-                            <td>{(device.notify_on_connect) ? <span>✔</span> : <span>❌</span>}</td>
+                            <td>{(device.notify_on_connect) ? <span>✔</span> : <span></span>}</td>
                         </tr>
                     )}
                 </tbody>

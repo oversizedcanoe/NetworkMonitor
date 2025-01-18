@@ -140,6 +140,19 @@ def update_device_on_connection(mac_address: str, last_connected_date: datetime,
     args = (helper.date_to_ticks(last_connected_date), updated_ip_address, mac_address)
     __execute_command(command_text, args)
 
+def update_device(device_id: int, device_name: str, device_type: int, notify: bool):
+    command_text =  """
+                    Update ConnectedDevice 
+                    set 
+                    FriendlyName = ?,
+                    DeviceType = ?,
+                    NotifyOnConnect = ? 
+                    where ID = ?
+                    """
+
+    args = (device_name, device_type, notify, device_id)
+    __execute_command(command_text, args)
+
 def get_all_devices() -> List[ConnectedDevice]:
     query_text = """
                 Select 

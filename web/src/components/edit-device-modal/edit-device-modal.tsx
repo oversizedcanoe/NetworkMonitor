@@ -1,21 +1,27 @@
 import { useEffect, useState } from 'react';
 import './edit-device-modal.css'
 import { ModalService } from '../../services/modal.service';
+import { BackendService } from '../../services/backendservice';
 
 function EditDeviceModal() {
+    const [friendlyName, setFriendlyName] = useState('');
     const [deviceName, setDeviceName] = useState('');
     const [deviceType, setDeviceType] = useState(0);
+    const [notifyOnConnect, setNotifyOnConnect] = useState(false);
+    const [deviceId, setDeviceId] = useState(0);
     const [isOpen, setIsOpen] = useState(false);
 
     let devices: any[] = [];
-    let id: number = 0;
     let selectedDevice: any = null;
 
     function setModalData(isOpen: boolean, modalData: any) {
-        console.warn(modalData);
+        setDeviceId(modalData.id);
         devices = modalData.devices;
-        id = modalData.id;
-        selectedDevice = devices.filter(d => d.id == id)[0];
+        selectedDevice = devices.filter(d => d.id == modalData.id)[0];
+        setFriendlyName(selectedDevice.friendly_name ?? "");
+        setDeviceName(selectedDevice.device_name ?? "");
+        setDeviceType(selectedDevice.device_type);
+        setNotifyOnConnect(Boolean(selectedDevice.notify_on_connect));
         setIsOpen(isOpen);
     }
 
@@ -26,14 +32,34 @@ function EditDeviceModal() {
         };
     }, [isOpen]);
 
-    function updateDevice() {
-        alert(deviceName + ' ' + deviceType);
-        close();
+    useEffect(() => {
+        function handleKeyDown(e: KeyboardEvent) {
+            if (e.key == 'Escape') {
+                close();
+            }
+        }
+
+        document.addEventListener('keydown', handleKeyDown);
+
+        return () => {
+            document.removeEventListener('keydown', handleKeyDown);
+        }
+    }, []);
+
+
+    async function updateDevice() {
+        const backendService = new BackendService();
+        const result = await backendService.post('device/' + deviceId.toString(), { friendlyName: friendlyName, deviceType: deviceType, notify: notifyOnConnect });
+        if (result == '') {
+            location.reload();
+        }
     }
 
-    function close(){
+    function close() {
+        setFriendlyName('');
         setDeviceName('');
         setDeviceType(0);
+        setNotifyOnConnect(false);
         setIsOpen(false);
     }
 
@@ -42,13 +68,17 @@ function EditDeviceModal() {
             <article>
                 <header>
                     <button aria-label="Close" rel="prev" onClick={close}></button>
-                    <p><b>Edit Device {`${id}`}</b></p>
+                    <p><b>Edit Device {`${deviceId}`}</b></p>
                 </header>
                 <form>
                     <fieldset>
                         <label>
+                            Friendly Name
+                            <input name="friendlyName" placeholder="Friendly name" value={friendlyName} onChange={(e) => setFriendlyName(e.target.value)} />
+                        </label>
+                        <label>
                             Device Name
-                            <input name="deviceName" placeholder="Device name" value={deviceName} onChange={(e) => setDeviceName(e.target.value)} />
+                            <input name="deviceName" placeholder="Device name" value={deviceName} disabled />
                         </label>
                         <label>
                             Device Type
@@ -64,6 +94,10 @@ function EditDeviceModal() {
                                 <option value={7}>Game Console</option>
                             </select>
                         </label>
+                        <label>
+                            <input type="checkbox" name="notify" checked={notifyOnConnect} onChange={() => setNotifyOnConnect(!notifyOnConnect)} />
+                            Notify on Connect
+                        </label>
                     </fieldset>
                 </form>
                 <footer>
@@ -76,5 +110,3 @@ function EditDeviceModal() {
 }
 
 export default EditDeviceModal
-
-
