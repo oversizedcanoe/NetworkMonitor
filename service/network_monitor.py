@@ -1,4 +1,5 @@
 from logging import getLogger
+from service.notification_service import notify_new_connections
 import shared.data_access as data_access
 from service import network_manager
 import time
@@ -50,12 +51,6 @@ def handle_connected_devices(query_time: datetime, connected_devices: List[Conne
 
     return devices_to_notify_for
 
-def notify_new_connections(query_time: datetime, connected_devices: List[ConnectedDevice]) -> None:
-    # TODO email or something
-    for device in connected_devices:
-        __logger.info('New device connected at %s -- %s', query_time, device.to_json())
-    pass
-
 def monitor_network_forever():
     previous_connected_devices: List[ConnectedDevice] = []
 
@@ -87,6 +82,7 @@ def monitor_network_forever():
 
         skip_notification = False
         
+        __logger.debug('Sleeping for %ss...', settings.SLEEP_TIME)
         time.sleep(settings.SLEEP_TIME)
 
 # def log_prev_and_current(previous_devices, current_devices):
