@@ -133,4 +133,4 @@ credentials.py
 *.db
 *.db-journal
 .vs/
-.env
+*.env
