@@ -67,6 +67,7 @@ This could be extended or used to do things like:
 ![image](https://github.com/user-attachments/assets/df05a9b1-809b-4ec2-bed0-c47353580854)
 
 ## Todo
+- Figure out a better way to run all three portions at once/in one command
 - Better mobile display
 - Ensure everything can be hosted on a device on a network and accessed from other devices (i.e. not just localhost)
 - Ensure Linux works
