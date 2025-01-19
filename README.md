@@ -59,6 +59,13 @@ This could be extended or used to do things like:
 - Store statistics on how long devices were connected to a network
 - Home security (ensure strangers are not using your wifi)
 
+## Demo
+![image](https://github.com/user-attachments/assets/f4fbded9-0aca-4d93-bcab-66c752635441)
+
+![image](https://github.com/user-attachments/assets/b1913a00-353e-4b3c-a8ad-9a4f4256b6b0)
+
+![image](https://github.com/user-attachments/assets/df05a9b1-809b-4ec2-bed0-c47353580854)
+
 ## Todo
 - Better mobile display
 - Ensure everything can be hosted on a device on a network and accessed from other devices (i.e. not just localhost)
