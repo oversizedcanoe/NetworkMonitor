@@ -14,29 +14,6 @@ function DeviceTable({ lastQueryTime, devices, isDetailTable }: DeviceTableProps
         ModalService.setOpen(true, {id: id, devices: devices})
     }
 
-    function getDeviceSymbol(deviceType: number){
-        switch(deviceType){
-            case 0:
-                // Unknown
-                return '❓'                
-            case 1:
-                // Network Monitor Server
-                
-            case 2:
-                // Router
-            case 3:
-                // Computer
-            case 4:
-                // Cell Phone
-            case 5:
-                // Smart Home Device
-            case 6:
-                // TV
-            case 7:
-                // Game Console
-        }
-    }
-
     if (isDetailTable) {
         return (
             <table className="striped">
@@ -60,7 +37,7 @@ function DeviceTable({ lastQueryTime, devices, isDetailTable }: DeviceTableProps
                             <td>{device.id}</td>
                             <td>{device.friendly_name}</td>
                             <td>{device.device_name}</td>
-                            <td>{device.vendor_name}</td>
+                            <td>{device.manufacturer}</td>
                             <td>{device.ip_address}</td>
                             <td>{device.mac_address}</td>
                             <td>{device.last_connected_date}</td>
