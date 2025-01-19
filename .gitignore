@@ -134,3 +134,4 @@ credentials.py
 *.db-journal
 .vs/
 *.env
+!template.env
