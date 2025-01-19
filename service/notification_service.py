@@ -13,7 +13,7 @@ def notify_new_connections(query_time: datetime, connected_devices: List[Connect
     contents = ""
 
     for device in connected_devices:
-        if (device.friendly_name != None):
+        if (device.friendly_name != None and device.friendly_name != ''):
             contents += f"Named Device: {device.friendly_name}"
         else:
             contents += f"Unnamed Device (DeviceName: '{device.device_name}' Manufacturer: '{device.manufacturer}')"
