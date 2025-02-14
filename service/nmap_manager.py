@@ -57,10 +57,12 @@ def run_nmap(base_ip_address: str) -> List[str]:
 
     arg_array: List[str] = [settings.NMAP_PATH, '-sn', base_ip_address + '.0/24']
 
-    if helper.is_windows() == False:
+    if helper.is_windows():
+        completed_process = subprocess.run(arg_array, stdout=subprocess.PIPE, text=True, shell=True)
+    else:
         arg_array.insert(0, 'sudo')
+        completed_process = subprocess.run(arg_array, stdout=subprocess.PIPE, text=True)
 
-    completed_process = subprocess.run(arg_array, stdout=subprocess.PIPE, text=True, shell=True)
     __logger.debug('Query complete.')
     completed_process_output = completed_process.stdout
 
