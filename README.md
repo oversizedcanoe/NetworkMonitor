@@ -41,6 +41,8 @@ python -m pip install -r requirements.txt
 
 Next, in `/Service`, rename `template.env` to `email.env` and update the email and password to your desired email and the base64 hash of it's password. This will be the email which sends and receives emails. 
 
+Next, in the project root folder, open `settings.py` and update the path of your nmap installation. If it's part of your path, you can just put 'nmap'.
+
 Finally, open three terminals in the project base folder and run each application separately (ensure the API and Service are ran in venv):
 - Service:
 ```
