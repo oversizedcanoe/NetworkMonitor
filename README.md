@@ -23,11 +23,19 @@ This assumes you already have Python, Node, and NPM installed.
 
 First, download nmap [here](https://nmap.org/download).
 
-After downloading this repo or cloning it, start a Python virtual environment and install `requirements.txt` (Windows shown below):
+After downloading this repo or cloning it, start a Python virtual environment and install `requirements.txt`:
 
+Windows:
 ```
 python -m venv venv
 .\venv\Scripts\activate
+python -m pip install -r requirements.txt
+```
+
+Linux:
+```
+python -m venv venv
+. venv/bin/activate
 python -m pip install -r requirements.txt
 ```
 
