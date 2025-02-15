@@ -23,17 +23,27 @@ This assumes you already have Python, Node, and NPM installed.
 
 First, download nmap [here](https://nmap.org/download).
 
-After downloading this repo or cloning it, start a Python virtual environment and install `requirements.txt` (Windows shown below):
+After downloading this repo or cloning it, start a Python virtual environment and install `requirements.txt`:
 
+Windows:
 ```
 python -m venv venv
 .\venv\Scripts\activate
 python -m pip install -r requirements.txt
 ```
 
+Linux:
+```
+python -m venv venv
+. venv/bin/activate
+python -m pip install -r requirements.txt
+```
+
 Next, in `/Service`, rename `template.env` to `email.env` and update the email and password to your desired email and the base64 hash of it's password. This will be the email which sends and receives emails. 
 
-Next, in `settings.py`, update `NMAP_PATH` to the path of your nmap installation.
+Next, in the project root folder, open `settings.py` and update the path of your nmap installation. If it's part of your path, you can just put 'nmap'.
+
+Next, go to `web/src/services/backendservice.ts` and update `this.apiUrl` to your computers' local IP address. Do not change the port.
 
 Finally, open three terminals in the project base folder and run each application separately (ensure the API and Service are ran in venv):
 - Service:
@@ -69,6 +79,7 @@ This could be extended or used to do things like:
 ![image](https://github.com/user-attachments/assets/df05a9b1-809b-4ec2-bed0-c47353580854)
 
 ## Todo
+- Figure out a better way to run all three portions at once/in one command
 - Better mobile display
 - Ensure everything can be hosted on a device on a network and accessed from other devices (i.e. not just localhost)
 - Ensure Linux works
